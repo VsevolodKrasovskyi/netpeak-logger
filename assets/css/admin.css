@@ -1,0 +1,372 @@
+/* Общие стили для таблицы */
+.netpeak-logs-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    table-layout: fixed;
+    /* Фиксированная ширина колонок */
+}
+
+.netpeak-logs-table th,
+.netpeak-logs-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+    word-wrap: break-word;
+    /* Разрыв длинных слов */
+}
+
+.netpeak-logs-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.netpeak-logs-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.netpeak-logs-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Стили для фиксированной ширины колонок */
+.netpeak-logs-table th:nth-child(1),
+.netpeak-logs-table td:nth-child(1) {
+    width: 100px;
+    /* User */
+}
+
+.netpeak-logs-table th:nth-child(2),
+.netpeak-logs-table td:nth-child(2) {
+    width: 120px;
+    /* Action */
+}
+
+.netpeak-logs-table th:nth-child(3),
+.netpeak-logs-table td:nth-child(3) {
+    width: 100px;
+    /* Log Type */
+}
+
+.netpeak-logs-table th:nth-child(4),
+.netpeak-logs-table td:nth-child(4) {
+    width: 250px;
+    /* Message */
+}
+
+.netpeak-logs-table th:nth-child(5),
+.netpeak-logs-table td:nth-child(5) {
+    width: 150px;
+    /* Date */
+}
+
+.netpeak-logs-table th:nth-child(6),
+.netpeak-logs-table td:nth-child(6) {
+    width: 100px;
+    /* Actions */
+}
+
+/* Стили для пользовательской колонки */
+.netpeak-logs-table .user-column {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.netpeak-logs-table .user-column img {
+    border-radius: 50%;
+}
+
+/* Стили для сообщений */
+.message-container {
+    cursor: pointer;
+}
+
+.message-container .short-message {
+    display: block;
+}
+
+.message-container .full-message {
+    display: none;
+}
+
+.message-container:hover .full-message {
+    display: block;
+}
+
+
+
+
+/* Filter */
+form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+form select,
+form button {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+
+form select {
+    min-width: 150px;
+}
+
+
+form button {
+    background-color: #0073aa;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+form button:hover {
+    background-color: #005f8d;
+    border-color: #005f8d;
+}
+
+@media (max-width: 768px) {
+    form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    form select,
+    form button {
+        width: 100%;
+    }
+}
+
+/*Commit*/
+
+.netpeak-commit-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+
+.netpeak-user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.netpeak-avatar {
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 15px;
+}
+
+.netpeak-username {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.netpeak-commit-form label {
+    font-weight: bold;
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.netpeak-commit-form textarea,
+.netpeak-commit-form select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+}
+
+.netpeak-commit-form button {
+    width: 100%;
+    background-color: #0073aa;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.netpeak-commit-form button:hover {
+    background-color: #005f8d;
+}
+
+form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+form select,
+form button {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+
+form select {
+    min-width: 150px;
+}
+
+
+form button {
+    background-color: #0073aa;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+form button:hover {
+    background-color: #005f8d;
+    border-color: #005f8d;
+}
+
+@media (max-width: 768px) {
+    form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    form select,
+    form button {
+        width: 100%;
+    }
+}
+
+
+#edit-form-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+
+.netpeak-popup-container {
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+
+.netpeak-popup-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 30%;
+    left: 40%;
+    text-align: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+.netpeak-popup-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.netpeak-popup-close:hover {
+    color: #f00;
+}
+
+
+textarea#message {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    resize: none;
+}
+
+button.button-primary {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007cba;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button.button-primary:hover {
+    background-color: #005fa3;
+}
