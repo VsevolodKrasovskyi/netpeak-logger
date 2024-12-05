@@ -12,6 +12,7 @@ class AdminRenderer
         $tabs = [
             'logs' => 'Logs',
             'commits' => 'Commits',
+            'settings' => 'Settings',
         ];
 
         $output = '';
@@ -45,13 +46,23 @@ class AdminRenderer
             echo '<div id="commits" class="netpeak-tab-content netpeak-active">';
             self::commit_tab();
             echo '</div>';
+        } elseif ($active_tab === 'settings') { 
+            echo '<div id="settings" class="netpeak-tab-content netpeak-active">';
+            self::settings_tab();
+            echo '</div>';
         }
         echo '</div>';
         echo '</div>';
     }
 
+
     /**
-     * Render logs tab
+     * Renders the logs tab displaying a table of logs with filters.
+     *
+     * This method retrieves the logs from the database, applies necessary filters,
+     * and displays them in a table format. Each log includes details such as user,
+     * action, log type, message, date, and available actions. If no logs are found,
+     * a message indicating the absence of logs is displayed.
      */
     public static function logs_tab()
     {
@@ -92,8 +103,15 @@ class AdminRenderer
         echo '</tbody></table>';
     }
 
+    
     /**
-     * Render actions for each log
+     * Render edit and delete links for a log entry, if the current user
+     * is the same as the user who made the log entry and the log type is
+     * "commit".
+     *
+     * @param object $log The log entry to render actions for.
+     *
+     * @return string The rendered action links.
      */
     private static function render_actions($log)
     {
@@ -153,9 +171,11 @@ class AdminRenderer
     {
         $user = get_user_by('login', $user_login);
         $avatar = $user ? get_avatar($user->ID, 40) : '<div style="width: 40px; height: 40px; background: #ccc; border-radius: 50%;"></div>';
+        $display_name = $user ? esc_html($user->display_name) : esc_html($user_login);
 
-        return '<div class="user-column" style="display: flex; align-items: center; gap: 10px;">' . $avatar . '<span>' . esc_html($user_login) . '</span></div>';
+        return '<div class="user-column" style="display: flex; align-items: center; gap: 10px;">' . $avatar . '<span>' . $display_name . '</span></div>';
     }
+
 
     /**
      * Render collapsible message
@@ -171,6 +191,16 @@ class AdminRenderer
 
     
 
+        /**
+         * Render commit tab
+         *
+         * This function renders a form for adding a new commit. The form includes
+         * a field for the commit message, a select box for choosing the commit
+         * type, and a submit button. The form is submitted via AJAX to the
+         * `netpeak_add_commit` action.
+         *
+         * @since 1.0.0
+         */
     public static function commit_tab()
     {
         $current_user = wp_get_current_user();
@@ -209,6 +239,12 @@ class AdminRenderer
             </form>
         </div>';
     }
+
+    public static function settings_tab() {
+        echo '<h1>Settings</h1>';
+    }
+        
+    
 
 
     //Filters

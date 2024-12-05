@@ -36,7 +36,7 @@
 /* Стили для фиксированной ширины колонок */
 .netpeak-logs-table th:nth-child(1),
 .netpeak-logs-table td:nth-child(1) {
-    width: 100px;
+    width: 25%;
     /* User */
 }
 
