@@ -1,0 +1,18 @@
+{
+    "name": "netpeak/netpeak-logger",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "NetpeakLogger\\Loggers\\": "inc/class/loggers/",
+            "NetpeakLogger\\Render\\": "inc/class/admin/",
+            "NetpeakLogger\\": "inc/class/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Masik",
+            "email": "v.krasovskyi@netpeak.dev"
+        }
+    ],
+    "require": {}
+}

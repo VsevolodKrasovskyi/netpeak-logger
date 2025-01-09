@@ -18,9 +18,9 @@ class PostLogger extends Logger {
      */
     public static function init() {
         $hooks = [
-            'post_updated' => 3, // Использует 3 аргумента (ID, новый объект, старый объект)
-            'transition_post_status' => 3, // Использует 3 аргумента (новый статус, старый статус, объект поста)
-            'before_delete_post' => 1, // Использует 1 аргумент (ID поста)
+            'post_updated' => 3, 
+            'transition_post_status' => 3, 
+            'before_delete_post' => 1, 
         ];
 
         foreach ($hooks as $hook => $args) {
@@ -42,14 +42,13 @@ class PostLogger extends Logger {
     protected static function generate_message($action, $arg1, $arg2, $arg3) {
         switch ($action) {
             case 'post_updated':
-                // Обрабатываем изменения контента, если статус не изменился
+
                 if ($arg2->post_status === $arg3->post_status) {
                     return self::handle_post_updated($arg1, $arg2, $arg3);
                 }
                 break;
 
             case 'transition_post_status':
-                // Обрабатываем изменения статуса
                 return self::handle_status_transition($arg1, $arg2, $arg3);
 
             case 'before_delete_post':
@@ -77,12 +76,12 @@ class PostLogger extends Logger {
 
         $changes = [];
 
-        // Проверка заголовка
+
         if ($post_before->post_title !== $post_after->post_title) {
             $changes[] = sprintf('title from "%s" to "%s"', $post_before->post_title, $post_after->post_title);
         }
 
-        // Проверка контента
+
         if ($post_before->post_content !== $post_after->post_content) {
             $changes[] = 'content updated';
         }
@@ -134,7 +133,7 @@ class PostLogger extends Logger {
 
             case 'draft':
                 if ($old_status === 'auto-draft') {
-                    return null; // Не логируем переход из auto-draft
+                    return null; 
                 }
                 return sprintf('Unpublished %s "%s" to draft', $post_type_label, $post->post_title);
 

@@ -10,7 +10,7 @@
  */
 
 namespace NetpeakLogger;
-use NetpeakLogger\AdminRenderer;
+use NetpeakLogger\Render\AdminRenderer;
 use NetpeakLogger\Logger;
 
 /**

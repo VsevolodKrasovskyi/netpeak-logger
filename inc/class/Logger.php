@@ -43,8 +43,13 @@ abstract class Logger {
      * @param string $message Human-readable description of the event
      * @return void
      */
-    protected static function insert_log($table_name, $user_login, $action, $message) {
+    protected static function insert_log($user_login, $action, $message) {
         global $wpdb;
+        $table_name = $wpdb->prefix . 'netpeak_logs';
+        if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+            error_log("Netpeak Logger Error: Table `$table_name` does not exist.");
+            return;
+        }
 
         $result = $wpdb->insert($table_name, [
             'user_login' => $user_login,
@@ -68,8 +73,6 @@ abstract class Logger {
      * @return void
      */
     public static function log_event($arg1 = null, $arg2 = null, $arg3 = null) {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'netpeak_logs';
         $user = wp_get_current_user();
         
         $current_filter = current_filter();
@@ -78,7 +81,7 @@ abstract class Logger {
         $message = static::generate_message($current_filter, $arg1, $arg2, $arg3);
     
         if ($message !== null) {
-            static::insert_log($table_name, $user->user_login, $action, $message);
+            static::insert_log($user->user_login, $action, $message);
         }
     }
 

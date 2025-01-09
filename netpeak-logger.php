@@ -1,20 +1,24 @@
 <?php
 /**
  * Plugin Name: Netpeak Logger
- * Plugin URI: https://netpeak.net
+ * Plugin URI: https://netpeak.dev
  * Description: Tracks changes in WordPress and logs activity using Heartbeat API. Provides comprehensive logging functionality for developers and administrators.
  * Version: 1.0
  * Author: Masik
- * Author URI: https://netpeak.net
+ * Author URI: https://netpeak.dev
  * Text Domain: netpeak-logger
  * Domain Path: /languages
  * Requires at least: 5.0
  * Requires PHP: 7.2
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- *
- * @package NetpeakLogger
- */
+ * ███╗   ██╗███████╗████████╗██████╗ ███████╗ █████╗ ██╗  ██╗
+ * ████╗  ██║██╔════╝╚══██╔══╝██╔══██╗██╔════╝██╔══██╗██║ ██╔╝
+ * ██╔██╗ ██║█████╗     ██║   ██████╔╝█████╗  ███████║█████╔╝ 
+ * ██║╚██╗██║██╔══╝     ██║   ██╔═══╝ ██╔══╝  ██╔══██║██╔═██╗ 
+ * ██║ ╚████║███████╗   ██║   ██║     ███████╗██║  ██║██║  ██╗
+ * ╚═╝  ╚═══╝╚══════╝   ╚═╝   ╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝
+*/
 
 // If this file is called directly, abort.
 defined('ABSPATH') || exit;
@@ -29,19 +33,14 @@ define('NETPEAK_LOGGER_VERSION', '1.0');
 /**
  * Required Files
  */
-require_once NETPEAK_LOGGER_PATH . 'inc/class/class-logger.php';
-require_once NETPEAK_LOGGER_PATH . 'inc/class/class-logger-manager.php';
-require_once NETPEAK_LOGGER_PATH . 'inc/class/loggers/class-post-logger.php';
-require_once NETPEAK_LOGGER_PATH . 'inc/class/loggers/class-plugin-logger.php';
-require_once NETPEAK_LOGGER_PATH . 'inc/class/loggers/class-user-logger.php';
-require_once NETPEAK_LOGGER_PATH . 'inc/class/loggers/class-comment-logger.php';
-require_once NETPEAK_LOGGER_PATH . 'inc/class/class-admin.php';
-require_once NETPEAK_LOGGER_PATH . 'inc/class/class-admin-render.php';
-require_once NETPEAK_LOGGER_PATH . 'inc/class/class-ajax-handler.php';
 require_once NETPEAK_LOGGER_PATH . 'inc/init.php';
 
+if (file_exists(NETPEAK_LOGGER_PATH . '/vendor/autoload.php')) {
+    require_once NETPEAK_LOGGER_PATH . '/vendor/autoload.php';
+}
+
 /**
- * Import Namespaces
+ * Import Classes
  */
 use NetpeakLogger\Logger;
 use NetpeakLogger\LoggerManager;
@@ -49,20 +48,22 @@ use NetpeakLogger\Admin;
 use NetpeakLogger\AjaxHandler;
 use NetpeakLogger\Creator\Init;
 
+
 /**
  * Plugin Lifecycle Hooks
  */
-register_activation_hook(__FILE__, [Init::class, 'netpeak_create_tables']);
-register_uninstall_hook(__FILE__, [Init::class, 'netpeak_delete_tables']);
+register_activation_hook(__FILE__, [Init::class, 'netpeak_install']);
+register_uninstall_hook(__FILE__, [Init::class, 'netpeak_uninstall']);
 
 /**
  * Initialize Components
  */
-add_action('init', [Init::class, 'hooks']);
+add_action('admin_init', [Init::class, 'hooks']);
 add_action('init', [Admin::class, 'hooks']);
 add_action('init', [LoggerManager::class, 'init']);
 add_action('admin_menu', [Admin::class, 'init']);
 add_action('admin_post_netpeak_add_commit', [AjaxHandler::class, 'add_commit']);
+
 
 /**
  * Enqueue Admin Assets

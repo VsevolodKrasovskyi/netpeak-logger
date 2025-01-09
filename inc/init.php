@@ -10,6 +10,7 @@
  * @since 1.0
  */
 
+
 namespace NetpeakLogger\Creator;
 
 class Init {
@@ -20,7 +21,7 @@ class Init {
      * @global wpdb $wpdb WordPress database abstraction object
      * @return void
      */
-    public static function netpeak_create_tables() {
+    public static function netpeak_create_tables_logs() {
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'netpeak_logs';
@@ -28,8 +29,8 @@ class Init {
 
         $sql = "CREATE TABLE $table_name (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-            user_login VARCHAR(60) NOT NULL,
-            action VARCHAR(20) NOT NULL,
+            user_login VARCHAR(100) NOT NULL,
+            action VARCHAR(255) NOT NULL,
             log_type ENUM('automatic', 'commit') DEFAULT 'automatic' NOT NULL,
             message TEXT DEFAULT NULL,
             date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -40,19 +41,13 @@ class Init {
         dbDelta($sql);
     }
 
-    /**
-     * Deletes plugin-related database tables during uninstallation
-     *
-     * @since 1.0
-     * @global wpdb $wpdb WordPress database abstraction object
-     * @return void
-     */
     public static function netpeak_delete_tables() {
         global $wpdb;
 
         $table_name = $wpdb->prefix . 'netpeak_logs';
         $wpdb->query("DROP TABLE IF EXISTS $table_name");
     }
+
 
     /**
      * Adds a developer role with administrator capabilities
@@ -70,6 +65,21 @@ class Init {
             $admin_capabilities
         );
     }
+    public static function netpeak_register_setting() {
+        register_setting('netpeak-logger-settings', 'netpeak_post_logger_enabled');
+        register_setting('netpeak-logger-settings', 'netpeak_plugin_logger_enabled');
+        register_setting('netpeak-logger-settings', 'netpeak_user_logger_enabled');
+        register_setting('netpeak-logger-settings', 'netpeak_comment_logger_enabled');
+        register_setting('netpeak-logger-settings', 'netpeak_email_logger_enabled');
+        register_setting('netpeak-logger-settings', 'netpeak_telegram_bot_token');
+    }
+
+    public static function netpeak_delete_settings() {
+        delete_option('netpeak_post_logger_enabled');
+        delete_option('netpeak_plugin_logger_enabled');
+        delete_option('netpeak_user_logger_enabled');
+        delete_option('netpeak_comment_logger_enabled');
+    }
 
     /**
      * Initializes all necessary hooks for the plugin
@@ -79,5 +89,15 @@ class Init {
      */
     public static function hooks() {
         self::netpeak_add_developer_role();
+        self::netpeak_register_setting();
+    }
+
+    public static function netpeak_install() {
+        self::netpeak_create_tables_logs();
+    }
+
+    public static function netpeak_uninstall() {
+        self::netpeak_delete_tables();
+        self::netpeak_delete_settings();
     }
 }

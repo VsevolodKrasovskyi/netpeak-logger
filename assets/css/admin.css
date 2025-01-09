@@ -176,10 +176,11 @@ form button:hover {
 .netpeak-avatar {
     border-radius: 50%;
     overflow: hidden;
-    margin-right: 15px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .netpeak-username {
+    margin-top: 10px;
     font-size: 18px;
     font-weight: bold;
     color: #333;

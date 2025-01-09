@@ -30,7 +30,7 @@ class PluginLogger extends Logger {
         // Hook for plugin installation
         add_action('upgrader_process_complete', [self::class, 'handle_plugin_installation'], 10, 2);
         // Hook for plugin upgrade
-        add_action('upgrader_process_complete', [self::class, 'handle_plugin_upgrade'], 10, 2);
+        add_action('upgrader_process_complete', [self::class, 'handle_plugin_update'], 10, 2);
     }
 
     /**
@@ -130,11 +130,8 @@ class PluginLogger extends Logger {
                     // Generating a message for the log
                     $message = sprintf('Installed plugin: "%s"', $plugin_name);
     
-                    // Table name
-                    $table_name = $wpdb->prefix . 'netpeak_logs';
-    
                     // Inserting the log
-                    static::insert_log($table_name, wp_get_current_user()->user_login, 'install_plugin', $message);
+                    static::insert_log(wp_get_current_user()->user_login, 'install_plugin', $message);
                 } else {
                     error_log('Plugin installation path not found: ' . $plugin_slug);
                 }
@@ -164,11 +161,8 @@ class PluginLogger extends Logger {
                         // Generating a message
                         $message = sprintf('Updated plugin: "%s"', $plugin_name);
     
-                        // Table name
-                        $table_name = $wpdb->prefix . 'netpeak_logs';
-    
                         // Inserting the log
-                        static::insert_log($table_name, wp_get_current_user()->user_login, 'update_plugin', $message);
+                        static::insert_log(wp_get_current_user()->user_login, 'update_plugin', $message);
                     }
                 }
             }
