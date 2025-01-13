@@ -61,7 +61,7 @@ class EmailLogger {
             $recipients = $mail['recipient'] ?? 'No Recipient'; 
             $subject = $data['your-subject'] ?? 'No Subject';
             $message = $data['your-message'] ?? 'No Message';
-            $status = 'Success';
+            $status = 'success';
     
             $this->log_email(
                 $data['your-email'] ?? 'no-reply@yourdomain.com',
@@ -83,7 +83,7 @@ class EmailLogger {
             $recipients = $mail['recipient'] ?? 'No Recipient';
             $subject = $data['your-subject'] ?? 'No Subject';
             $message = $data['your-message'] ?? 'No Message';
-            $status = 'Failed';
+            $status = 'failed';
     
             $this->log_email(
                 $data['your-email'] ?? 'no-reply@yourdomain.com',
@@ -120,6 +120,10 @@ class EmailLogger {
     }  
 
     public function check_errors($submission_data) {
+        if (!get_option('netpeak_check_error_log', 0)) {
+            return;
+        }
+
         global $wpdb;
         $last_error = $wpdb->get_row(
             "SELECT * FROM {$this->table_name} WHERE status = 'Failed' ORDER BY created_at DESC LIMIT 1"
@@ -140,6 +144,9 @@ class EmailLogger {
 
     public function send_daily_report()
     {
+        if(!get_option( 'netpeak_daily_report_enabled', 0)){
+            return;
+        }
         global $wpdb;
 
         $success_count = $wpdb->get_var(

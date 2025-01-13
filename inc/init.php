@@ -66,19 +66,32 @@ class Init {
         );
     }
     public static function netpeak_register_setting() {
-        register_setting('netpeak-logger-settings', 'netpeak_post_logger_enabled');
-        register_setting('netpeak-logger-settings', 'netpeak_plugin_logger_enabled');
-        register_setting('netpeak-logger-settings', 'netpeak_user_logger_enabled');
-        register_setting('netpeak-logger-settings', 'netpeak_comment_logger_enabled');
-        register_setting('netpeak-logger-settings', 'netpeak_email_logger_enabled');
-        register_setting('netpeak-logger-settings', 'netpeak_telegram_bot_token');
+        //Logger settings
+        register_setting('netpeak-logger-settings-loggers', 'netpeak_post_logger_enabled');
+        register_setting('netpeak-logger-settings-loggers', 'netpeak_plugin_logger_enabled');
+        register_setting('netpeak-logger-settings-loggers', 'netpeak_user_logger_enabled');
+        register_setting('netpeak-logger-settings-loggers', 'netpeak_comment_logger_enabled');
+        register_setting('netpeak-logger-settings-loggers', 'netpeak_email_logger_enabled');
+        //Telegram API
+        register_setting('netpeak-logger-settings-telegram', 'netpeak_daily_report_enabled');
+        register_setting('netpeak-logger-settings-telegram', 'netpeak_check_error_log');
+        register_setting('netpeak-logger-settings-telegram', 'netpeak_telegram_bot_token');
     }
 
     public static function netpeak_delete_settings() {
-        delete_option('netpeak_post_logger_enabled');
-        delete_option('netpeak_plugin_logger_enabled');
-        delete_option('netpeak_user_logger_enabled');
-        delete_option('netpeak_comment_logger_enabled');
+        $options = [
+            'netpeak_post_logger_enabled',
+            'netpeak_plugin_logger_enabled',
+            'netpeak_user_logger_enabled',
+            'netpeak_comment_logger_enabled',
+            'netpeak_email_logger_enabled',
+            'netpeak_telegram_bot_token',
+            'netpeak_daily_report_enabled',
+            'netpeak_check_error_log',
+        ];
+        foreach ($options as $option) {
+            delete_option($option);
+        }
     }
 
     /**

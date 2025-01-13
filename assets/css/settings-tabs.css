@@ -1,0 +1,87 @@
+.settings-structure-wrapper {
+    display: flex;
+    min-height: 500px;
+}
+
+.settings-sidebar {
+    width: 200px;
+    background-color: #1c2125;
+    padding: 20px;
+    height: 1300px;
+    overflow-y: auto;
+}
+
+.settings-tab {
+    display: block;
+    padding: 12px;
+    font-size: 16px;
+    color: #ffffff;
+    text-decoration: none;
+    margin-bottom: 10px;
+    background-color: transparent;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.settings-tab:hover {
+    background-color: #2c3338;
+    color: #ffffff;
+}
+
+.settings-tab-active {
+    background-color: #00b3e3;
+    color: #ffffff;
+    border-radius: 5px;
+}
+
+.settings-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #2c3338;
+    color: #ffffff;
+}
+
+.settings-content th{
+    color: white;
+}
+
+
+#settings table.form-table label {
+    color: white;
+}
+
+#settings table.form-table input[type="text"],
+#settings table.form-table input[type="url"],
+#settings table.form-table input[type="number"],
+#settings table.form-table input[type="checkbox"],
+#settings table.form-table input[type="date"],
+#settings table.form-table select,
+#settings table.form-table textarea {
+    background-color: #1c2125;
+    color: #ffffff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 3px;
+    box-sizing: border-box;
+    box-shadow: rgba(0, 0, 0, 0.7) 0px 1px 3px inset;
+}
+
+.switch input:checked+.slider {
+    background-color: #4CAF50;
+}
+
+.slider {
+    background-color: #1c2125;
+}
+
+#settings .title-global-switch h2 {
+    color: white;
+}
+
+.header-settings {
+    background: #00b3e3;
+    padding: 20px;
+}
+.header-settings h1
+{
+    color: white;
+}

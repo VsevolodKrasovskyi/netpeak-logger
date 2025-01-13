@@ -9,10 +9,36 @@ class RenderTabs extends AdminRenderer{
     public static function logs_tab()
     {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'netpeak_logs';
+        $table = $wpdb->prefix . 'netpeak_logs';
 
-        $logs = RenderFilters::get_filtered($table_name);
-        RenderFilters::render_filters($table_name);
+        $filters = [
+            'user_login' => $_GET['user'] ?? '',
+            'action' => $_GET['action'] ?? '',
+            'log_type' => $_GET['log_type'] ?? '',
+        ];
+        $param = [
+            'user' => [
+                'label' => 'All Users',
+                'query' => "SELECT DISTINCT user_login FROM {$table}",
+            ],
+            'action' => [
+                'label' => 'All Actions',
+                'query' => "SELECT DISTINCT action FROM {$table}",
+                'callback' => [Admin::class, 'format_action'],
+            ],
+            'log_type' => [
+                'label' => 'All Log Types',
+                'query' => "SELECT DISTINCT log_type FROM {$table}",
+                'callback' => 'ucfirst',
+            ],
+        ];
+        $hidden_fields = [
+            'page' => 'netpeak-logs',
+            'tab' => 'logs',
+        ];
+        $logs = RenderFilters::get_filters($table, $filters, 'date', 'DESC');
+        RenderFilters::render_filters($table, $param, $hidden_fields);
+        
 
         echo '<table class="netpeak-logs-table">';
         echo '<thead><tr>';
@@ -84,34 +110,32 @@ class RenderTabs extends AdminRenderer{
         </div>';
     }
 
-    public static function render_logs_email_page() {
-        
+    public static function email_logs_tab() {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'netpeak_email_logs';
-        $status_filter = isset($_GET['status_filter']) ? sanitize_text_field($_GET['status_filter']) : '';
-        $query = "SELECT * FROM {$table_name}";
+        $table = $wpdb->prefix . 'netpeak_email_logs';
+
+        $filters = [
+            'status' => $_GET['status'] ?? '',
+        ];
+        $param = [
+            'status' => [
+                'label' => 'All Statuses',
+                'query' => "SELECT DISTINCT status FROM {$table}",
+                'callback' => 'ucfirst',
+            ],
+        ];
+        $hidden_fields = [
+            'page' => 'netpeak-logs',
+            'tab' => 'email_logs',
+        ];
+
+        $logs = RenderFilters::get_filters($table, $filters, 'created_at');
+        RenderFilters::render_filters($table, $param, $hidden_fields);
         
-        if ($status_filter) {
-            $query .= $wpdb->prepare(" WHERE status = %s", $status_filter);
-        }
-
-        $query .= " ORDER BY created_at DESC";
-        $logs = $wpdb->get_results($query);
-
+    
         ?>
         <div class="wrap">
-            <h1>Email Logs</h1>
-        
-            <form method="get">
-                <input type="hidden" name="page" value="email-logs">
-                <select name="status_filter">
-                    <option value=""><?php esc_html_e('All Statuses', 'netpeak'); ?></option>
-                    <option value="Success" <?php selected($status_filter, 'Success'); ?>><?php esc_html_e('Success', 'netpeak'); ?></option>
-                    <option value="Failed" <?php selected($status_filter, 'Failed'); ?>><?php esc_html_e('Failed', 'netpeak'); ?></option>
-                </select>
-                <button type="submit" class="button"><?php esc_html_e('Filter', 'netpeak'); ?></button>
-            </form>
-
+            <h1>Email Logs</h1> 
             <table class="widefat fixed striped">
                 <thead>
                     <tr>
@@ -134,8 +158,8 @@ class RenderTabs extends AdminRenderer{
                                 <td><?php echo esc_html($log->subject); ?></td>
                                 <td><?php echo esc_html($log->message); ?></td>
                                 <td>
-                                    <span class="<?php echo $log->status === 'Success' ? 'log-success' : 'log-failed'; ?>">
-                                        <?php echo esc_html($log->status); ?>
+                                    <span class="<?php echo $log->status === 'success' ? 'log-success' : 'log-failed'; ?>">
+                                        <?php echo esc_html(ucfirst($log->status)); ?>
                                     </span>
                                 </td>
                                 <td><?php echo esc_html($log->created_at); ?></td>
@@ -164,75 +188,36 @@ class RenderTabs extends AdminRenderer{
         </style>
         <?php
     }
-
-    public static function settings_tab() {
+    
+    public static function settings_tab() {   
         ?>
-        <h1><?php _e('Settings', 'netpeak-logger'); ?></h1>
-        <form method="post" action="options.php">
+        <div class="header-settings">
+            <h1>Settings</h1>
+        </div>
+        <div class="settings-structure-wrapper">
+            <div class="settings-sidebar">
+                <a href="?page=netpeak-logs&tab=settings" class="settings-tab <?php echo (!isset($_GET['settings'])) ? 'settings-tab-active' : ''; ?>">
+                    <?php _e('Loggers', 'netpeak-logger'); ?>
+                </a>
+                <a href="?page=netpeak-logs&tab=settings&settings=telegram" class="settings-tab <?php echo (isset($_GET['settings']) && $_GET['settings'] == 'telegram') ? 'settings-tab-active' : ''; ?>">
+                    <?php _e('Telegram API', 'netpeak-logger'); ?>
+                </a>
+            </div>
+        <div class="settings-content">
             <?php
-            settings_fields('netpeak-logger-settings');
-            do_settings_sections('netpeak-logger-settings');
+            $settings_tab = isset($_GET['settings']) ? $_GET['settings'] : '';
+
+            if ($settings_tab == '') {
+                include NETPEAK_LOGGER_COMPONENTS_ADMIN . 'settings/loggers.php';
+            } 
+
+            elseif ($settings_tab == 'telegram') {
+                include NETPEAK_LOGGER_COMPONENTS_ADMIN . 'settings/telegram.php';
+            } 
+            
             ?>
-            <table class="form-table">
-                <tr>
-                    <th><?php _e('Post Logger', 'netpeak-logger'); ?></th>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" class="dependent-checkbox" name="netpeak_post_logger_enabled" value="1"
-                                <?php checked(1, get_option('netpeak_post_logger_enabled', 1)); ?> />
-                            <span class="slider"></span>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <th><?php _e('Plugin Logger', 'netpeak-logger'); ?></th>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" class="dependent-checkbox" name="netpeak_plugin_logger_enabled" value="1"
-                                <?php checked(1, get_option('netpeak_plugin_logger_enabled', 1)); ?> />
-                            <span class="slider"></span>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <th><?php _e('User Logger', 'netpeak-logger'); ?></th>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" class="dependent-checkbox" name="netpeak_user_logger_enabled" value="1"
-                                <?php checked(1, get_option('netpeak_user_logger_enabled', 1)); ?> />
-                            <span class="slider"></span>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <th><?php _e('Comment Logger', 'netpeak-logger'); ?></th>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" class="dependent-checkbox" name="netpeak_comment_logger_enabled" value="1"
-                                <?php checked(1, get_option('netpeak_comment_logger_enabled', 1)); ?> />
-                            <span class="slider"></span>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <th><?php _e('Email Logger', 'netpeak-logger'); ?></th>
-                    <td>
-                        <label class="switch">
-                            <input type="checkbox" class="dependent-checkbox" name="netpeak_email_logger_enabled" value="1"
-                                <?php checked(1, get_option('netpeak_email_logger_enabled', 1)); ?> />
-                            <span class="slider"></span>
-                        </label>
-                    </td>
-                </tr>
-                <tr>
-                    <th><?php _e('Telegram API Token', 'netpeak-logger'); ?></th>
-                    <td>
-                        <input type="password" name="netpeak_telegram_bot_token" value="<?php echo esc_attr(get_option('netpeak_telegram_bot_token')); ?>" />
-                    </td>
-                </tr>
-            </table>
-            <?php submit_button(); ?>
-        </form>
-        <?php
+        </div>
+    </div>    
+    <?php
     }
 }

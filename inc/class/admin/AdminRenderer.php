@@ -30,6 +30,7 @@ class AdminRenderer
         return $output;
     }
 
+
     /**
      * Render logs page
      */
@@ -58,7 +59,7 @@ class AdminRenderer
             echo '</div>';
         } elseif ($active_tab === 'email_logs') { 
             echo '<div id="email-logs" class="netpeak-tab-content netpeak-active">';
-            RenderTabs::render_logs_email_page();
+            RenderTabs::email_logs_tab();
             echo '</div>';
         }
         echo '</div>';
@@ -115,7 +116,7 @@ class AdminRenderer
             <form method="POST" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="edit_commit">
                 <input type="hidden" name="id" value="<?php echo esc_attr($log->id); ?>">
-                <label for="message">Message:</label>
+                <label for="message">Commit:</label>
                 <textarea name="message" id="message" rows="5"><?php echo esc_textarea($log->message); ?></textarea>
                 <button type="submit" class="button button-primary">Save Changes</button>
             </form>
@@ -149,14 +150,6 @@ class AdminRenderer
                     <span class="short-message">' . esc_html($short_message) . '</span>
                 </div>';
     }
-
-
-    
-
-    
-    
-
-    
 
 }
 
