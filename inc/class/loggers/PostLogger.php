@@ -123,6 +123,14 @@ class PostLogger extends Logger {
 
             case 'future':
                 $scheduled_date = get_post_time('Y-m-d H:i:s', true, $post);
+                $timezone = get_option('timezone_string');
+                if ($timezone) {
+                    $date = new DateTime($scheduled_date, new DateTimeZone($timezone));
+                    $scheduled_date = $date->format('Y-m-d H:i:s');
+                } else {
+                    $scheduled_date = get_post_time('Y-m-d H:i:s', false, $post);
+                }
+
                 return sprintf('Scheduled %s "%s" for %s', $post_type_label, $post->post_title, $scheduled_date);
 
             case 'private':

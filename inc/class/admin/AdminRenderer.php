@@ -30,7 +30,6 @@ class AdminRenderer
         return $output;
     }
 
-
     /**
      * Render logs page
      */
@@ -75,21 +74,13 @@ class AdminRenderer
      * action, log type, message, date, and available actions. If no logs are found,
      * a message indicating the absence of logs is displayed.
      */
-    
-
-    
-
     protected static function render_actions($log)
     {
         $actions = [];
-        $current_user = wp_get_current_user();
-        $can_edit = $current_user->user_login === $log->user_login && $log->log_type === 'commit';
 
-        if ($can_edit) {
-            $actions[] = '<a href="#" class="edit-commit" data-edit-id="' . esc_attr($log->id) . '">Edit</a>';
-            $actions[] = '<a href="' . esc_url(admin_url('admin-post.php?action=delete_commit&id=' . $log->id)) . '" class="delete-commit" onclick="return confirm(\'Are you sure you want to delete this commit?\')">Delete</a>';
-        }
-
+        $actions[] = '<a href="#" class="edit-commit" data-edit-id="' . esc_attr($log->id) . '">Edit</a>';
+        $actions[] = '<a href="' . esc_url(admin_url('admin-post.php?action=delete_commit&id=' . $log->id)) . '" class="delete-commit" onclick="return confirm(\'Are you sure you want to delete?\')">Delete</a>';
+        
         return implode(' | ', $actions);
     }
 
@@ -116,7 +107,7 @@ class AdminRenderer
             <form method="POST" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
                 <input type="hidden" name="action" value="edit_commit">
                 <input type="hidden" name="id" value="<?php echo esc_attr($log->id); ?>">
-                <label for="message">Commit:</label>
+                <label for="message">Message:</label>
                 <textarea name="message" id="message" rows="5"><?php echo esc_textarea($log->message); ?></textarea>
                 <button type="submit" class="button button-primary">Save Changes</button>
             </form>
@@ -132,12 +123,18 @@ class AdminRenderer
      */
     protected static function render_user_column($user_login)
     {
-        $user = get_user_by('login', $user_login);
-        $avatar = $user ? get_avatar($user->ID, 40) : '<div style="width: 40px; height: 40px; background: #ccc; border-radius: 50%;"></div>';
-        $display_name = $user ? esc_html($user->display_name) : esc_html($user_login);
-
+        if ($user_login === 'wordpress@wordpress.org') {
+            $avatar = '<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiQqvP9mSAN_KNxZlbvD9VT-yl4Vf_PuT6Cw&s" width="40" alt="System User" style="border-radius: 50%;">';
+            $display_name = 'Wordpress System (Cron)';
+        } else {
+            $user = get_user_by('login', $user_login);
+            $avatar = $user ? get_avatar($user->ID, 40) : '<div style="width: 40px; height: 40px; background: #ccc; border-radius: 50%;"></div>';
+            $display_name = $user ? esc_html($user->display_name) : esc_html($user_login);
+        }
+    
         return '<div class="user-column" style="display: flex; align-items: center; gap: 10px;">' . $avatar . '<span>' . $display_name . '</span></div>';
     }
+    
 
 
     /**

@@ -53,6 +53,7 @@ use NetpeakLogger\LoggerManager;
 use NetpeakLogger\Admin;
 use NetpeakLogger\AjaxHandler;
 use NetpeakLogger\Creator\Init;
+use NetpeakLogger\Render\AdminRenderer;
 
 /**
  * Plugin Lifecycle Hooks
@@ -68,9 +69,7 @@ add_action('init', [Admin::class, 'hooks']);
 add_action('init', [LoggerManager::class, 'init']);
 add_action('admin_menu', [Admin::class, 'init']);
 add_action('admin_post_netpeak_add_commit', [AjaxHandler::class, 'add_commit']);
-
-
-
+add_action('wp_ajax_switch_settings_tab', [AjaxHandler::class, 'switch_settings_tab']);
 /**
  * Enqueue Admin Assets
  *
@@ -124,6 +123,11 @@ add_action('admin_enqueue_scripts', function() {
         NETPEAK_LOGGER_VERSION,
         true
     );
-
-    
+    wp_enqueue_script(
+        'netpeak-logger-settings-tabs',
+        NETPEAK_LOGGER_URL . 'assets/js/setting-tab.js',
+        [],
+        NETPEAK_LOGGER_VERSION,
+        true
+    );
 });

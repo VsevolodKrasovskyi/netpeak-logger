@@ -1,16 +1,15 @@
 <?php
 namespace NetpeakLogger;
+use NetpeakLogger\Render\RenderTabs;
 
 class AjaxHandler {
 
     public static function add_commit() {
 
-        // Проверка прав доступа
         if (!current_user_can('manage_options')) {
             wp_die(__('Unauthorized', 'netpeak-logger'));
         }
 
-        // Проверка на пустое сообщение
         $commit_message = sanitize_text_field($_POST['commit_message'] ?? '');
         if (empty($commit_message)) {
             wp_die(__('Commit message cannot be empty', 'netpeak-logger'));
@@ -19,7 +18,6 @@ class AjaxHandler {
         global $wpdb;
         $table_name = $wpdb->prefix . 'netpeak_logs';
 
-        // Сохранение коммита
         $user = wp_get_current_user();
         $commit_type = sanitize_text_field($_POST['commit_type'] ?? 'general');
         $commit_object = sanitize_text_field($_POST['commit_object'] ?? '');
@@ -34,8 +32,18 @@ class AjaxHandler {
 
         $wpdb->insert($table_name, $data);
 
-        // Выполняем редирект
         wp_redirect(admin_url('admin.php?page=netpeak-logs&tab=logs'));
         exit;
+    }
+    public static function switch_settings_tab() {
+        $settings_tab = isset($_POST['settings']) ? sanitize_text_field($_POST['settings']) : '';
+
+        if ($settings_tab == '') {
+            include NETPEAK_LOGGER_COMPONENTS_ADMIN . 'settings/loggers.php';
+        } 
+        elseif ($settings_tab == 'telegram') {
+            include NETPEAK_LOGGER_COMPONENTS_ADMIN . 'settings/telegram.php';
+        } 
+        wp_die();
     }
 }

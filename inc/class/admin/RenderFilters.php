@@ -46,6 +46,7 @@ class RenderFilters {
 
     public static function get_filters($table_name, $filters = [], $order_by = 'id', $order_dir = 'DESC') {
         global $wpdb;
+
         if (!$wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name))) {
             return [];
         }

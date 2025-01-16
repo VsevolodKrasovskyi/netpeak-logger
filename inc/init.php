@@ -35,6 +35,9 @@ class Init {
             message TEXT DEFAULT NULL,
             date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
             PRIMARY KEY (id)
+            KEY netpeak_idx_user_login (user_login),  -- Secondary index for user_login
+            KEY netpeak_idx_action (action),          -- Secondary index for action
+            KEY netpeak_idx_log_type (log_type)       -- Secondary index for log_type
         ) $charset_collate;";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');

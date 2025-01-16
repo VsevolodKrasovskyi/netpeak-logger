@@ -51,6 +51,8 @@ abstract class Logger {
             return;
         }
 
+        $user_login = !empty($user_login) ? $user_login : 'wordpress@wordpress.org';
+
         $result = $wpdb->insert($table_name, [
             'user_login' => $user_login,
             'action' => $action,

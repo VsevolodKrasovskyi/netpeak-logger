@@ -144,34 +144,44 @@ class EmailLogger {
 
     public function send_daily_report()
     {
-        if(!get_option( 'netpeak_daily_report_enabled', 0)){
-            return;
-        }
         global $wpdb;
+
+        $start_of_day = date('Y-m-d 00:00:00', current_time('timestamp'));
+        $end_of_day = date('Y-m-d 23:59:59', current_time('timestamp'));
 
         $success_count = $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$this->table_name} WHERE status = %s AND DATE(created_at) = CURDATE()",
-                'Success'
+                "SELECT COUNT(*) FROM {$this->table_name} 
+                WHERE status = %s 
+                AND created_at BETWEEN %s AND %s",
+                'Success',
+                $start_of_day, 
+                $end_of_day  
             )
         );
 
         $failed_count = $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$this->table_name} WHERE status = %s AND DATE(created_at) = CURDATE()",
-                'Failed'
+                "SELECT COUNT(*) FROM {$this->table_name} 
+                WHERE status = %s 
+                AND created_at BETWEEN %s AND %s",
+                'Failed',
+                $start_of_day, 
+                $end_of_day  
             )
         );
+
+        
         $total_count = $success_count + $failed_count;
 
         $message = "📊 <b>Daily Email Report</b> 📊\n\n" .
                 "Total emails: <b>{$total_count}</b>\n" .
                 "Successful: <b>{$success_count}</b>\n" .
                 "Failed: <b>{$failed_count}</b>\n\n" .
-                "Generated on: " . date('Y-m-d H:i:s');
+                "Generated on: " . current_time('Y-m-d H:i:s');
 
         $this->telegram_alert($message);
-    }   
+    } 
 
     public function telegram_alert($message) {
         $bot_token = get_option('netpeak_telegram_bot_token');
@@ -228,13 +238,11 @@ class EmailLogger {
 
     public function register_cron_event()
     {
-        if (!wp_next_scheduled('netpeak_email_checker_hourly')) {
-            wp_schedule_event(time(), 'hourly', 'netpeak_email_checker_hourly'); 
-        }
-
         if(!wp_next_scheduled('netpeak_email_checker_daily'))
         {
-            wp_schedule_event(time(), 'daily', 'netpeak_email_checker_daily'); 
+            $timezone_offset = get_option('gmt_offset') * HOUR_IN_SECONDS;
+            $timestamp = strtotime('23:00:00') - $timezone_offset;
+            wp_schedule_event($timestamp, 'daily', 'netpeak_email_checker_daily'); 
         }
     }    
 }

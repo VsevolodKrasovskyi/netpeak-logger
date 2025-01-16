@@ -196,14 +196,18 @@ class RenderTabs extends AdminRenderer{
         </div>
         <div class="settings-structure-wrapper">
             <div class="settings-sidebar">
-                <a href="?page=netpeak-logs&tab=settings" class="settings-tab <?php echo (!isset($_GET['settings'])) ? 'settings-tab-active' : ''; ?>">
+                <a href="?page=netpeak-logs&tab=settings" data-settings="" class="settings-tab <?php echo (!isset($_GET['settings'])) ? 'settings-tab-active' : ''; ?>">
                     <?php _e('Loggers', 'netpeak-logger'); ?>
                 </a>
-                <a href="?page=netpeak-logs&tab=settings&settings=telegram" class="settings-tab <?php echo (isset($_GET['settings']) && $_GET['settings'] == 'telegram') ? 'settings-tab-active' : ''; ?>">
+                <a href="?page=netpeak-logs&tab=settings&settings=telegram" data-settings="telegram" class="settings-tab <?php echo (isset($_GET['settings']) && $_GET['settings'] == 'telegram') ? 'settings-tab-active' : ''; ?>">
                     <?php _e('Telegram API', 'netpeak-logger'); ?>
                 </a>
             </div>
         <div class="settings-content">
+            <div id="loader" style="display:none; text-align: center;">
+                <img src="<?php echo NETPEAK_LOGGER_URL . 'assets/img/loading.gif'; ?>" alt="Loading">
+            </div>
+            
             <?php
             $settings_tab = isset($_GET['settings']) ? $_GET['settings'] : '';
 
