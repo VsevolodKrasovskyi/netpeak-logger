@@ -1,4 +1,5 @@
 jQuery(document).ready(function ($) {
+    
     $('.settings-tab').on('click', function (e) {
         e.preventDefault();
         $('.settings-tab').removeClass('settings-tab-active');

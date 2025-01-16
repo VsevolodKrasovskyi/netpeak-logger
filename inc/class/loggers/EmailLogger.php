@@ -3,7 +3,7 @@
 namespace NetpeakLogger\Loggers;
 
 class EmailLogger {
-    private $table_name;
+    private static $table_name;
 
     /**
      * Hooks into:
@@ -13,28 +13,29 @@ class EmailLogger {
      * - `admin_menu`: Adds a menu page for logs.
      * - `admin_notices`: Checks for daily errors.
      */
-    public function __construct() {
+    public static function init() {
         global $wpdb;
-        $this->table_name = $wpdb->prefix . 'netpeak_email_logs';
+        self::$table_name = $wpdb->prefix . 'netpeak_email_logs';
 
-        add_action('init', [$this, 'check_and_create_table']);
-        add_action('wpcf7_mail_sent', [$this, 'log_cf7_success']);
-        add_action('wpcf7_mail_failed', [$this, 'log_cf7_failed']);
-        add_action('after_setup_theme', [$this, 'register_cron_event']);
+        add_action('init', [self::class, 'check_and_create_table']);
+        add_action('wpcf7_mail_sent', [self::class, 'log_cf7_success']);
+        add_action('wpcf7_mail_failed', [self::class, 'log_cf7_failed']);
+        add_action('after_setup_theme', [self::class, 'register_cron_event']);
 
         //Cron
-        add_action('netpeak_email_checker_daily', [$this, 'send_daily_report']);
+        add_action('netpeak_email_checker_daily', [self::class, 'send_daily_report']);
     }
 
-    public function check_and_create_table() {
-        $this->create_email_logs_table();
+    public static function check_and_create_table() {
+        self::create_email_logs_table();
     }
 
     private function create_email_logs_table() {
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
+        $table = self::$table_name;
 
-        $sql = "CREATE TABLE IF NOT EXISTS {$this->table_name} (
+        $sql = "CREATE TABLE IF NOT EXISTS {$table} (
             id BIGINT(20) NOT NULL AUTO_INCREMENT,
             sender VARCHAR(255) DEFAULT NULL,
             recipient VARCHAR(255) DEFAULT NULL,
@@ -51,7 +52,7 @@ class EmailLogger {
 
     }
 
-    public function log_cf7_success($contact_form) {
+    public static function log_cf7_success($contact_form) {
         $submission = \WPCF7_Submission::get_instance();
     
         if ($submission) {
@@ -63,7 +64,7 @@ class EmailLogger {
             $message = $data['your-message'] ?? 'No Message';
             $status = 'success';
     
-            $this->log_email(
+            self::log_email(
                 $data['your-email'] ?? 'no-reply@yourdomain.com',
                 $recipients,
                 $subject,
@@ -73,7 +74,7 @@ class EmailLogger {
         }
     }
 
-    public function log_cf7_failed($contact_form) {
+    public static function log_cf7_failed($contact_form) {
         $submission = \WPCF7_Submission::get_instance();
     
         if ($submission) {
@@ -85,7 +86,7 @@ class EmailLogger {
             $message = $data['your-message'] ?? 'No Message';
             $status = 'failed';
     
-            $this->log_email(
+            self::log_email(
                 $data['your-email'] ?? 'no-reply@yourdomain.com',
                 $recipients,
                 $subject,
@@ -93,13 +94,14 @@ class EmailLogger {
                 $status
             );
         }
-        $this->check_errors($data);
+        self::check_errors($data);
     }
     
-    private function log_email($sender, $recipient, $subject, $message, $status) {
+    private static function log_email($sender, $recipient, $subject, $message, $status) {
         global $wpdb;
+        $table = self::$table_name;
         $wpdb->insert(
-            $this->table_name,
+            $table,
             [
                 'sender'   => $sender,
                 'recipient' => $recipient,
@@ -119,14 +121,15 @@ class EmailLogger {
         );
     }  
 
-    public function check_errors($submission_data) {
+    public static function check_errors($submission_data) {
         if (!get_option('netpeak_check_error_log', 0)) {
             return;
         }
 
         global $wpdb;
+        $table = self::$table_name;
         $last_error = $wpdb->get_row(
-            "SELECT * FROM {$this->table_name} WHERE status = 'Failed' ORDER BY created_at DESC LIMIT 1"
+            "SELECT * FROM {$table} WHERE status = 'Failed' ORDER BY created_at DESC LIMIT 1"
         );
     
         if ($last_error) {
@@ -138,20 +141,21 @@ class EmailLogger {
                     "Status: <b>Failed</b>\n\n" .
                     "Please check the logs for more details.";
     
-            $this->telegram_alert($message);
+            self::telegram_alert($message);
         }
     }
 
-    public function send_daily_report()
+    public static function send_daily_report()
     {
         global $wpdb;
 
         $start_of_day = date('Y-m-d 00:00:00', current_time('timestamp'));
         $end_of_day = date('Y-m-d 23:59:59', current_time('timestamp'));
+        $table = self::$table_name;
 
         $success_count = $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$this->table_name} 
+                "SELECT COUNT(*) FROM {$table} 
                 WHERE status = %s 
                 AND created_at BETWEEN %s AND %s",
                 'Success',
@@ -162,7 +166,7 @@ class EmailLogger {
 
         $failed_count = $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$this->table_name} 
+                "SELECT COUNT(*) FROM {$table} 
                 WHERE status = %s 
                 AND created_at BETWEEN %s AND %s",
                 'Failed',
@@ -180,10 +184,10 @@ class EmailLogger {
                 "Failed: <b>{$failed_count}</b>\n\n" .
                 "Generated on: " . current_time('Y-m-d H:i:s');
 
-        $this->telegram_alert($message);
+        self::telegram_alert($message);
     } 
 
-    public function telegram_alert($message) {
+    public static function telegram_alert($message) {
         $bot_token = get_option('netpeak_telegram_bot_token');
         $url_get_updates = "https://api.telegram.org/bot{$bot_token}/getUpdates";
     
@@ -236,7 +240,7 @@ class EmailLogger {
      * Register the cron event.
      */
 
-    public function register_cron_event()
+    public static function register_cron_event()
     {
         if(!wp_next_scheduled('netpeak_email_checker_daily'))
         {

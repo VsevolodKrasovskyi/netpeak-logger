@@ -34,7 +34,7 @@ class LoggerManager {
             CommentLogger::init();
         }
         if (get_option('netpeak_email_logger_enabled', 0)) {
-            new EmailLogger();
+            EmailLogger::init();
         }
     }
     
