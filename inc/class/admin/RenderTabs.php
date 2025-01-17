@@ -36,7 +36,7 @@ class RenderTabs extends AdminRenderer{
             'page' => 'netpeak-logs',
             'tab' => 'logs',
         ];
-        $logs = RenderFilters::get_filters($table, $filters, 'date', 'DESC');
+        $logs = RenderFilters::get_filters($table, $filters, 'created_at', 'DESC');
         RenderFilters::render_filters($table, $param, $hidden_fields);
         
 
@@ -62,7 +62,7 @@ class RenderTabs extends AdminRenderer{
                 echo '<td>' . esc_html(Admin::format_action($log->action)) . '</td>';
                 echo '<td>' . esc_html(ucfirst($log->log_type)) . '</td>';
                 echo '<td>' . AdminRenderer::render_collapsible_message($log->message) . '</td>';
-                echo '<td>' . esc_html($log->date) . '</td>';
+                echo '<td>' . esc_html($log->created_at) . '</td>';
                 echo '<td>' . AdminRenderer::render_actions($log) . '</td>';
                 echo '</tr>';
             }

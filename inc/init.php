@@ -23,7 +23,6 @@ class Init {
      */
     public static function netpeak_create_tables_logs() {
         global $wpdb;
-
         $table_name = $wpdb->prefix . 'netpeak_logs';
         $charset_collate = $wpdb->get_charset_collate();
 
@@ -33,24 +32,54 @@ class Init {
             action VARCHAR(255) NOT NULL,
             log_type ENUM('automatic', 'commit') DEFAULT 'automatic' NOT NULL,
             message TEXT DEFAULT NULL,
-            date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-            PRIMARY KEY (id)
-            KEY netpeak_idx_user_login (user_login),  -- Secondary index for user_login
-            KEY netpeak_idx_action (action),          -- Secondary index for action
-            KEY netpeak_idx_log_type (log_type)       -- Secondary index for log_type
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY (id),
+            KEY netpeak_idx_user_login (user_login),  
+            KEY netpeak_idx_action (action),          
+            KEY netpeak_idx_log_type (log_type)      
         ) $charset_collate;";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
+        error_log("Creating table with query: " . $sql);
+    }
+
+    public static function create_email_logs_table() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'netpeak_email_logs';
+        $charset_collate = $wpdb->get_charset_collate();
+
+        $sql = "CREATE TABLE IF NOT EXISTS {$table_name} (
+            id BIGINT(20) NOT NULL AUTO_INCREMENT,
+            sender VARCHAR(255) DEFAULT NULL,
+            recipient VARCHAR(255) DEFAULT NULL,
+            subject VARCHAR(255) DEFAULT NULL,
+            message TEXT DEFAULT NULL,
+            status VARCHAR(50) NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            KEY netpeak_idx_status (status),
+        ) $charset_collate;";
+
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+        error_log("Creating table with query: " . $sql);
+
     }
 
     public static function netpeak_delete_tables() {
         global $wpdb;
 
-        $table_name = $wpdb->prefix . 'netpeak_logs';
-        $wpdb->query("DROP TABLE IF EXISTS $table_name");
-    }
+        $tables = [
+            $wpdb->prefix . 'netpeak_logs',
+            $wpdb->prefix . 'netpeak_email_logs'
+        ];
 
+        foreach ($tables as $table_name) {
+            $wpdb->query("DROP TABLE IF EXISTS $table_name");
+            error_log("Deleted table: " . $table_name);
+        }
+    }
 
     /**
      * Adds a developer role with administrator capabilities
@@ -110,10 +139,12 @@ class Init {
 
     public static function netpeak_install() {
         self::netpeak_create_tables_logs();
+        self::create_email_logs_table();
+
     }
 
     public static function netpeak_uninstall() {
-        self::netpeak_delete_tables();
+        // self::netpeak_delete_tables();
         self::netpeak_delete_settings();
     }
 }

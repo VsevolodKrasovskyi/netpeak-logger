@@ -8,8 +8,8 @@
             <th><?php _e('Enable Daily Report', 'netpeak-logger'); ?></th>
             <td>
                 <label class="switch">
-                    <input type="checkbox" class="dependent-checkbox" name="netpeak_daily_report_enabled" value="1"
-                        <?php checked(1, get_option('netpeak_daily_report_enabled', 1)); ?> />
+                    <input type="checkbox" class="dependent-checkbox" name="netpeak_daily_report_enabled" value="0"
+                        <?php checked(1, get_option('netpeak_daily_report_enabled', 0)); ?> />
                     <span class="slider"></span>
                 </label>
             </td>
@@ -18,8 +18,8 @@
             <th><?php _e('Enable Error Log Telegram', 'netpeak-logger'); ?></th>
             <td>
                 <label class="switch">
-                    <input type="checkbox" class="dependent-checkbox" name="netpeak_check_error_log" value="1"
-                        <?php checked(1, get_option('netpeak_check_error_log', 1)); ?> />
+                    <input type="checkbox" class="dependent-checkbox" name="netpeak_check_error_log" value="0"
+                        <?php checked(1, get_option('netpeak_check_error_log', 0)); ?> />
                     <span class="slider"></span>
                 </label>
             </td>

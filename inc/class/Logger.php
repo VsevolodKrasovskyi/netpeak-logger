@@ -58,7 +58,7 @@ abstract class Logger {
             'action' => $action,
             'log_type' => 'automatic',
             'message' => $message,
-            'date' => current_time('mysql'),
+            'created_at' => current_time('mysql'),
         ]);
 
         if ($result === false) {
@@ -83,7 +83,7 @@ abstract class Logger {
         $message = static::generate_message($current_filter, $arg1, $arg2, $arg3);
     
         if ($message !== null) {
-            static::insert_log($user->user_login, $action, $message);
+            static::insert_log($user->user_email, $action, $message);
         }
     }
 

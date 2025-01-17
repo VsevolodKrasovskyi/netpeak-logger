@@ -16,41 +16,12 @@ class EmailLogger {
     public static function init() {
         global $wpdb;
         self::$table_name = $wpdb->prefix . 'netpeak_email_logs';
-
-        add_action('init', [self::class, 'check_and_create_table']);
+        
         add_action('wpcf7_mail_sent', [self::class, 'log_cf7_success']);
         add_action('wpcf7_mail_failed', [self::class, 'log_cf7_failed']);
         add_action('after_setup_theme', [self::class, 'register_cron_event']);
-
-        //Cron
         add_action('netpeak_email_checker_daily', [self::class, 'send_daily_report']);
-    }
-
-    public static function check_and_create_table() {
-        self::create_email_logs_table();
-    }
-
-    private function create_email_logs_table() {
-        global $wpdb;
-        $charset_collate = $wpdb->get_charset_collate();
-        $table = self::$table_name;
-
-        $sql = "CREATE TABLE IF NOT EXISTS {$table} (
-            id BIGINT(20) NOT NULL AUTO_INCREMENT,
-            sender VARCHAR(255) DEFAULT NULL,
-            recipient VARCHAR(255) DEFAULT NULL,
-            subject VARCHAR(255) DEFAULT NULL,
-            message TEXT DEFAULT NULL,
-            status VARCHAR(50) NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (id)
-        ) $charset_collate;";
-
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
-        error_log("Creating table with query: " . $sql);
-
-    }
+    }    
 
     public static function log_cf7_success($contact_form) {
         $submission = \WPCF7_Submission::get_instance();
@@ -73,7 +44,6 @@ class EmailLogger {
             );
         }
     }
-
     public static function log_cf7_failed($contact_form) {
         $submission = \WPCF7_Submission::get_instance();
     
@@ -233,9 +203,6 @@ class EmailLogger {
     
         die('No valid chat IDs found');
     }
-    
-    
-
     /**
      * Register the cron event.
      */

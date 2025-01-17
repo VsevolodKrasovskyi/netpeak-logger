@@ -121,19 +121,21 @@ class AdminRenderer
     /**
      * Render user column with avatar
      */
-    protected static function render_user_column($user_login)
+    protected static function render_user_column($user_email)
     {
-        if ($user_login === 'wordpress@wordpress.org') {
+        if ($user_email === 'wordpress@wordpress.org') {
             $avatar = '<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiQqvP9mSAN_KNxZlbvD9VT-yl4Vf_PuT6Cw&s" width="40" alt="System User" style="border-radius: 50%;">';
-            $display_name = 'Wordpress System (Cron)';
+            $display_name = 'WordPress System (Cron)';
         } else {
-            $user = get_user_by('login', $user_login);
+
+            $user = get_user_by('email', $user_email);
             $avatar = $user ? get_avatar($user->ID, 40) : '<div style="width: 40px; height: 40px; background: #ccc; border-radius: 50%;"></div>';
-            $display_name = $user ? esc_html($user->display_name) : esc_html($user_login);
+            $display_name = $user ? esc_html($user->display_name) : esc_html($user_email); 
         }
-    
+
         return '<div class="user-column" style="display: flex; align-items: center; gap: 10px;">' . $avatar . '<span>' . $display_name . '</span></div>';
     }
+
     
 
 
