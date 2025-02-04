@@ -17,13 +17,14 @@
     font-size: 16px;
     color: #ffffff;
     text-decoration: none;
+    border: 1px #00b3e3 solid;
+    border-radius: 5px;
     margin-bottom: 10px;
-    background-color: transparent;
-    transition: background-color 0.3s, color 0.3s;
+    background-color: #2c3338;
+    
 }
 
 .settings-tab:hover {
-    background-color: #2c3338;
     color: #ffffff;
 }
 

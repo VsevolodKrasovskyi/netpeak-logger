@@ -1,8 +1,6 @@
-<form method="post" action="options.php">
-    <?php
-    settings_fields('netpeak-logger-settings-telegram');
-    do_settings_sections('netpeak-logger-settings-telegram');
-    ?>
+<form id="setting-form" method="post" action="">
+    <input type="hidden" name="action" value="settings_form_submit"/>
+    <input type="hidden" name="settings" value="telegram"/>
     <table class="form-table">
         <tr>
             <th><?php _e('Enable Daily Report', 'netpeak-logger'); ?></th>

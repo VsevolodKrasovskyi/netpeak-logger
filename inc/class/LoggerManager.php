@@ -33,8 +33,10 @@ class LoggerManager {
         if (get_option('netpeak_comment_logger_enabled', 0)) {
             CommentLogger::init();
         }
-        if (get_option('netpeak_email_logger_enabled', 0)) {
-            EmailLogger::init();
+        if (is_plugin_active('contact-form-7/wp-contact-form-7.php')) {
+            if (get_option('netpeak_email_logger_enabled', 0)) {
+                EmailLogger::init();
+            }
         }
     }
     

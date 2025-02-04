@@ -1,0 +1,22 @@
+/* Version: 1.0.7 */
+.netpeak-wysiwyg .mce-btn button {
+    background-color: #0073aa !important;
+    color: #fff !important;
+    padding: 5px 10px !important;
+    border: none !important;
+    font-weight: bold !important;
+}
+
+.netpeak-wysiwyg .mce-btn.mce-active button {
+    background: #00b3e3 !important;
+
+}
+
+.netpeak-wysiwyg .mce-btn button:hover {
+    background-color: #00b3e3 !important;
+}
+
+.netpeak-wysiwyg .mce-toolbar .mce-ico
+{
+    color:#fff;
+}

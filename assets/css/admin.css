@@ -32,42 +32,48 @@
     background-color: #f1f1f1;
 }
 
-
-.netpeak-logs-table th:nth-child(1),
-.netpeak-logs-table td:nth-child(1) {
-    width: 25%;
-    /* User */
+.netpeak-logs-table td:nth-child(1),
+.netpeak-logs-table th:nth-child(1) {
+    width: 40px; /* Checkbox */
+    text-align: center;
 }
 
-.netpeak-logs-table th:nth-child(2),
-.netpeak-logs-table td:nth-child(2) {
-    width: 120px;
-    /* Action */
+.netpeak-logs-table td:nth-child(2),
+.netpeak-logs-table th:nth-child(2) {
+    width: 20%; /* User */
+    word-wrap: break-word;
 }
 
-.netpeak-logs-table th:nth-child(3),
-.netpeak-logs-table td:nth-child(3) {
-    width: 100px;
-    /* Log Type */
+.netpeak-logs-table td:nth-child(3),
+.netpeak-logs-table th:nth-child(3) {
+    width: 15%; /* Action */
+    text-align: left;
 }
 
-.netpeak-logs-table th:nth-child(4),
-.netpeak-logs-table td:nth-child(4) {
-    width: 250px;
-    /* Message */
+.netpeak-logs-table td:nth-child(4),
+.netpeak-logs-table th:nth-child(4) {
+    width: 12%; /* Log Type */
+    text-align: center;
 }
 
-.netpeak-logs-table th:nth-child(5),
-.netpeak-logs-table td:nth-child(5) {
-    width: 150px;
-    /* Date */
+.netpeak-logs-table td:nth-child(5),
+.netpeak-logs-table th:nth-child(5) {
+    width: 30%; /* Message */
+    word-wrap: break-word;
 }
 
-.netpeak-logs-table th:nth-child(6),
-.netpeak-logs-table td:nth-child(6) {
-    width: 100px;
-    /* Actions */
+.netpeak-logs-table td:nth-child(6),
+.netpeak-logs-table th:nth-child(6) {
+    width: 15%; /* Date */
+    text-align: center;
 }
+
+.netpeak-logs-table td:nth-child(7),
+.netpeak-logs-table th:nth-child(7) {
+    width: 10%; /* Actions */
+    text-align: center;
+}
+
 
 
 .netpeak-logs-table .user-column {
@@ -493,4 +499,28 @@ input:checked+.slider:before {
 .tooltip-content {
     max-width: 90vw;
     max-height: 90vh;
+}
+
+.edit-commit-form
+{
+    margin-right: 20px;
+}
+.edit-commit-form button[type="submit"] 
+{
+    margin-top: 20px;
+}
+/* Settings */
+.settings-content .intro-content{
+    background-color: #3a3f45;
+    padding: 5px 20px 30px 20px ;
+}
+.settings-content .intro-content h3
+{
+    color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+}
+.settings-content .intro-content p
+{
+    color: inherit;
 }

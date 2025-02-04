@@ -28,25 +28,21 @@ class RenderFilters {
         echo '</select>';
     }
 
-    
+
+
     /**
-     * Retrieves filtered records from a specified database table.
+     * Get records from specified table with filters and ordering.
      *
-     * This method constructs and executes a SQL query to fetch records from the
-     * given table, applying optional filters, order, and direction.
+     * @param string $table_name Table name
+     * @param array $filters Filter array, key is column name, value is filter value
+     * @param string $order_by Column name to order by
+     * @param string $order_dir Sorting direction, ASC or DESC
      *
-     * @param string $table_name The name of the database table to query.
-     * @param array $filters An associative array of column-value pairs to filter the results.
-     *                       Default is an empty array (no filters applied).
-     * @param string $order_by The column name to order the results by. Default is 'id'.
-     * @param string $order_dir The direction to order the results, either 'ASC' or 'DESC'.
-     *                          Default is 'DESC'.
-     * @return array An array of results retrieved from the database table.
+     * @return array Array of records
      */
-
-    public static function get_filters($table_name, $filters = [], $order_by = 'id', $order_dir = 'DESC') {
+    public static function get_filters($table_name, $filters = [], $order_by = 'id', $order_dir = 'DESC', $limit = 10,  $offset = 0) {
         global $wpdb;
-
+    
         if (!$wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name))) {
             return [];
         }
@@ -54,24 +50,33 @@ class RenderFilters {
         $where_clauses = [];
         $params = [];
     
+        if (!isset($filters['is_archive']) || $filters['is_archive'] === '') {
+            $filters['is_archive'] = '0';
+        }
+    
+
         foreach ($filters as $column => $value) {
-            if (!empty($value)) {
+            if ($column === 'is_archive') {
+                $where_clauses[] = "is_archive = %d";
+                $params[] = intval($value);
+            } elseif (!empty($value)) {
                 $where_clauses[] = "{$column} = %s";
                 $params[] = sanitize_text_field($value);
             }
         }
-
-        $where_sql = empty($where_clauses) ? '1=1' : implode(' AND ', $where_clauses);
     
-        $query = "SELECT * FROM {$table_name} WHERE {$where_sql} ORDER BY {$order_by} {$order_dir}";
+        $where_sql = empty($where_clauses) ? '1=1' : implode(' AND ', $where_clauses);
+        $query = "SELECT * FROM {$table_name} WHERE {$where_sql} ORDER BY {$order_by} {$order_dir} LIMIT %d OFFSET %d";
 
+        $params [] = $limit;
+        $params[] = $offset;
+    
         if (!empty($params)) {
             $query = $wpdb->prepare($query, $params);
         }
-        
+    
         return $wpdb->get_results($query);
     }
-    
     
     /**
      * Renders a filter form for querying database records.
@@ -115,8 +120,8 @@ class RenderFilters {
     
         echo '<button type="submit" class="button">Filter</button>';
         echo '</form>';
-    }
-    
 
+        AdminRenderer::bulk_edit_actions();
+    }
 
 }

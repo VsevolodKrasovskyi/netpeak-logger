@@ -19,13 +19,17 @@ class AdminRenderer
         
         $output = '';
         foreach ($tabs as $tab => $label) {
-            if ($tab === 'email_logs' && !get_option('netpeak_email_logger_enabled', 1)) {
+            if (
+                $tab === 'email_logs' && 
+                (!get_option('netpeak_email_logger_enabled', 1) || !is_plugin_active('contact-form-7/wp-contact-form-7.php'))
+            ) {
                 continue;
             }
-
+    
             $is_active = $active_tab === $tab ? 'netpeak-nav-tab-active' : '';
             $output .= '<a href="?page=netpeak-logs&tab=' . esc_attr($tab) . '" class="netpeak-nav-tab ' . esc_attr($is_active) . '">' . esc_html($label) . '</a>';
         }
+    
 
         return $output;
     }
@@ -56,16 +60,20 @@ class AdminRenderer
             echo '<div id="settings" class="netpeak-tab-content netpeak-active">';
             RenderTabs::settings_tab();
             echo '</div>';
+
+        }elseif ($active_tab === 'edit_commit') {
+            RenderTabs::edit_commit_page();
+        
         } elseif ($active_tab === 'email_logs') { 
-            echo '<div id="email-logs" class="netpeak-tab-content netpeak-active">';
-            RenderTabs::email_logs_tab();
-            echo '</div>';
+            if (is_plugin_active('contact-form-7/wp-contact-form-7.php')) {
+                echo '<div id="email-logs" class="netpeak-tab-content netpeak-active">';
+                RenderTabs::email_logs_tab();
+                echo '</div>';
+            }
         }
         echo '</div>';
         echo '</div>';
-    }
-
-
+    }    
     /**
      * Renders the logs tab displaying a table of logs with filters.
      *
@@ -75,56 +83,73 @@ class AdminRenderer
      * a message indicating the absence of logs is displayed.
      */
     protected static function render_actions($log)
-    {
-        $actions = [];
+{
+    $is_archive = isset($_GET['is_archive']) ? intval($_GET['is_archive']) : 0;
+    $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : '';
+    $page = isset($_GET['page']) ? sanitize_text_field($_GET['page']) : '';
 
-        $actions[] = '<a href="#" class="edit-commit" data-edit-id="' . esc_attr($log->id) . '">Edit</a>';
-        $actions[] = '<a href="' . esc_url(admin_url('admin-post.php?action=delete_commit&id=' . $log->id)) . '" class="delete-commit" onclick="return confirm(\'Are you sure you want to delete?\')">Delete</a>';
+    $is_logs = ($tab === 'logs' || ($page === 'netpeak-logs' && $tab !== 'email_logs'));
+    $is_email_logs = ($tab === 'email_logs');
+
+    $actions = [];
+
+    if ($is_logs) {
+        $actions[] = '<a href="' . esc_url(admin_url('admin.php?page=netpeak-logs&tab=edit_commit&id=' . $log->id)) . '"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/edit.png') . '" alt="Edit" width="16" height="16"></a>';
+    }
+
+    $actions[] = '<a href="' . esc_url(admin_url('admin-post.php?action=delete_commit&id=' . $log->id)) . '" class="delete-commit" onclick="return confirm(\'Are you sure you want to delete?\')"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/delete.png') . '" alt="Delete" width="16" height="16"></a>';
+
+    $log_type = $is_logs ? 'logs' : ($is_email_logs ? 'email' : '');
+
+    if ($log_type) {
+        if ($is_archive === 0) {
+            $actions[] = '<a href="#" class="archive-log" data-log-id="' . esc_attr($log->id) . '" data-log-type="' . esc_attr($log_type) . '"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/box.png') . '" alt="Archive" width="16" height="16"></a>';
+        } elseif ($is_archive === 1) {
+            $actions[] = '<a href="#" class="unarchive-log" data-log-id="' . esc_attr($log->id) . '" data-log-type="' . esc_attr($log_type) . '"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/unbox.png') . '" alt="Unarchive" width="16" height="16"></a>';
+        }
+    }
+
+    return implode(' | ', $actions);
+}
+
+
+    public static function bulk_edit_actions() {
+        $bulk_actions = [
+            '' => __('Bulk Actions', 'netpeak-logger'),
+            'delete' => __('Delete', 'netpeak-logger'),
+        ];
         
-        return implode(' | ', $actions);
-    }
-
-    public static function render_edit_form()
-    {
-        if (!isset($_GET['edit_id']) || empty($_GET['edit_id'])) {
-            wp_send_json_error(['message' => 'Invalid edit_id']);
+        if (!isset($_GET['is_archive']) || $_GET['is_archive'] == '0') {
+            $bulk_actions['archive'] = __('Archive', 'netpeak-logger');
         }
-
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'netpeak_logs';
-        $edit_id = intval($_GET['edit_id']);
-
-        $log = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $edit_id));
-
-        if (!$log) {
-            wp_send_json_error(['message' => 'Commit not found']);
+        
+        if (isset($_GET['is_archive']) && $_GET['is_archive'] == '1') {
+            $bulk_actions['unarchive'] = __('Unarchive', 'netpeak-logger');
         }
-
-        ob_start();
+        
         ?>
-        <div class="netpeak-popup-content">
-            <button class="netpeak-popup-close">&times;</button>
-            <form method="POST" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
-                <input type="hidden" name="action" value="edit_commit">
-                <input type="hidden" name="id" value="<?php echo esc_attr($log->id); ?>">
-                <label for="message">Message:</label>
-                <textarea name="message" id="message" rows="5"><?php echo esc_textarea($log->message); ?></textarea>
-                <button type="submit" class="button button-primary">Save Changes</button>
-            </form>
-        </div>
+        <form id="bulk-action-form" method="POST">
+            <input type="hidden" name="action" value="bulk_edit_logs">
+            
+            <div style="margin-top: 20px;">
+                <select id="bulk-action-selector" name="bulk_action">
+                    <?php foreach ($bulk_actions as $action => $label) : ?>
+                        <option value="<?php echo esc_attr($action); ?>"><?php echo esc_html($label); ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <button type="button" class="button button-primary" id="apply-bulk-action"><?php _e('Apply', 'netpeak-logger'); ?></button>
+            </div>
+        </form>
         <?php
-        $html = ob_get_clean();
-
-        wp_send_json_success(['html' => $html]);
     }
-
+    
     /**
      * Render user column with avatar
      */
     protected static function render_user_column($user_email)
     {
         if ($user_email === 'wordpress@wordpress.org') {
-            $avatar = '<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiQqvP9mSAN_KNxZlbvD9VT-yl4Vf_PuT6Cw&s" width="40" alt="System User" style="border-radius: 50%;">';
+            $avatar = '<img src=" ' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/wordpress.png'). '" width="40" alt="System User" style="border-radius: 50%;">';
             $display_name = 'WordPress System (Cron)';
         } else {
 
@@ -136,20 +161,33 @@ class AdminRenderer
         return '<div class="user-column" style="display: flex; align-items: center; gap: 10px;">' . $avatar . '<span>' . $display_name . '</span></div>';
     }
 
+    public static function format_archive_label($value) {
+        $labels = [
+            '0' => 'Active',
+            '1' => 'Archived',
+        ];
     
+        return $labels[$value] ?? 'Unknown';
+    }
 
 
     /**
      * Render collapsible message
      */
-    protected static function render_collapsible_message($message)
+    protected static function render_collapsible_message($message, $log_type)
     {
         $short_message = wp_trim_words($message, 10, '...');
+
+        if ($log_type === 'commit') {
+            return '<div class="message-container" data-full-message="' . esc_attr($message) . '" onclick="showPopupMessage(this)">
+                        <span class="view-full-label" style="font-weight: bold">Click to view full</span>
+                    </div>';
+        }
+
         return '<div class="message-container" title="Click to view full message" data-full-message="' . esc_attr($message) . '" onclick="showPopupMessage(this)">
                     <span class="short-message">' . esc_html($short_message) . '</span>
                 </div>';
     }
-
 }
 
 
