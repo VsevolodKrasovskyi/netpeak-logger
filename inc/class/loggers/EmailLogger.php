@@ -5,13 +5,16 @@ namespace NetpeakLogger\Loggers;
 class EmailLogger {
     private static $table_name;
 
+    
     /**
-     * Hooks into:
-     * - `init`: Checks and creates the logs table.
-     * - `wpcf7_mail_sent`: Logs successfully sent emails from CF7.
-     * - `wpcf7_mail_failed`: Logs failed emails from CF7.
-     * - `admin_menu`: Adds a menu page for logs.
-     * - `admin_notices`: Checks for daily errors.
+     * Initializes the EmailLogger class
+     *
+     * Hooks into the following actions:
+     *
+     * - wpcf7_mail_sent: Logs successful emails sent by CF7
+     * - wpcf7_mail_failed: Logs failed emails sent by CF7
+     * - after_setup_theme: Registers the daily cron event
+     * - netpeak_email_checker_daily: Sends the daily email report
      */
     public static function init() {
         global $wpdb;
@@ -19,8 +22,9 @@ class EmailLogger {
         
         add_action('wpcf7_mail_sent', [self::class, 'log_cf7_success']);
         add_action('wpcf7_mail_failed', [self::class, 'log_cf7_failed']);
-        add_action('after_setup_theme', [self::class, 'register_cron_event']);
-        add_action('netpeak_email_checker_daily', [self::class, 'send_daily_report']);
+        if(get_option('netpeak_daily_telegram_report_enabled', 0)) {
+            add_action('netpeak_daily_cron', [self::class, 'send_daily_report']);
+        }
     }    
 
     public static function log_cf7_success($contact_form) {
@@ -203,17 +207,5 @@ class EmailLogger {
     
         die('No valid chat IDs found');
     }
-    /**
-     * Register the cron event.
-     */
 
-    public static function register_cron_event()
-    {
-        if(!wp_next_scheduled('netpeak_email_checker_daily'))
-        {
-            $timezone_offset = get_option('gmt_offset') * HOUR_IN_SECONDS;
-            $timestamp = strtotime('23:00:00') - $timezone_offset;
-            wp_schedule_event($timestamp, 'daily', 'netpeak_email_checker_daily'); 
-        }
-    }    
 }

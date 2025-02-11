@@ -40,21 +40,14 @@ class RenderFilters {
      *
      * @return array Array of records
      */
-    public static function get_filters($table_name, $filters = [], $order_by = 'id', $order_dir = 'DESC', $limit = 10,  $offset = 0) {
-        global $wpdb;
-    
-        if (!$wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name))) {
-            return [];
-        }
-    
+    public static function get_filters($filters = []) {
         $where_clauses = [];
         $params = [];
-    
+        
         if (!isset($filters['is_archive']) || $filters['is_archive'] === '') {
             $filters['is_archive'] = '0';
         }
     
-
         foreach ($filters as $column => $value) {
             if ($column === 'is_archive') {
                 $where_clauses[] = "is_archive = %d";
@@ -66,17 +59,63 @@ class RenderFilters {
         }
     
         $where_sql = empty($where_clauses) ? '1=1' : implode(' AND ', $where_clauses);
-        $query = "SELECT * FROM {$table_name} WHERE {$where_sql} ORDER BY {$order_by} {$order_dir} LIMIT %d OFFSET %d";
+        return [$where_sql, $params];
+    }
 
-        $params [] = $limit;
-        $params[] = $offset;
+    /**
+     * Query the database for records with given filters and ordering.
+     *
+     * @param string $table_name Table name
+     * @param array $filters Filter array, key is column name, value is filter value
+     * @param string $order_by Column name to order by
+     * @param string $order_dir Sorting direction, ASC or DESC
+     * @param int $limit Limit of records to return
+     * @param int $offset Offset to start returning records from
+     *
+     * @return array Array of records
+     */
+    public static function query_db($table_name, $filters = [], $order_by = 'id', $order_dir = 'DESC', $limit = 10, $offset = 0) {
+        global $wpdb;
     
-        if (!empty($params)) {
-            $query = $wpdb->prepare($query, $params);
+        if (!$wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name))) {
+            return [];
         }
     
+        list($where_sql, $params) = self::get_filters($filters);
+    
+        $query = "SELECT * FROM {$table_name} WHERE {$where_sql} ORDER BY {$order_by} {$order_dir} LIMIT %d OFFSET %d";
+        $params[] = $limit;
+        $params[] = $offset;
+    
+        $query = $wpdb->prepare($query, $params);
         return $wpdb->get_results($query);
     }
+
+    /**
+     * Get the total number of records from a specified table with applied filters.
+     *
+     * @param string $table_name The name of the database table to query.
+     * @param array $filters Optional. An associative array of filter conditions, where the key is the column name and the value is the filter value.
+     *
+     * @return int The total count of records matching the filters. Returns 0 if the table does not exist.
+     */
+
+    public static function get_total_records($table_name, $filters = []) {
+        global $wpdb;
+    
+        if (!$wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name))) {
+            return 0;
+        }
+    
+        list($where_sql, $params) = self::get_filters($filters);
+    
+        $query = "SELECT COUNT(*) FROM {$table_name} WHERE {$where_sql}";
+    
+        return (int) $wpdb->get_var($wpdb->prepare($query, $params));
+    }
+    
+    
+    
     
     /**
      * Renders a filter form for querying database records.

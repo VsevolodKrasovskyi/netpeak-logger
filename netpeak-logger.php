@@ -1,17 +1,18 @@
 <?php
 /**
  * Plugin Name: Netpeak Logger
- * Plugin URI: https://cdn
+ * Plugin URI: https://cdn.netpeak.dev/
  * Description: Tracks changes in WordPress and logs activity using Heartbeat API. Provides comprehensive logging functionality for developers and administrators.
  * Version: 1.1
- * Author: Masik
- * Author URI: https://netpeak.net
+ * Author: Netpeak Dev Team
+ * Author URI: https://netpeak.dev/
  * Text Domain: netpeak-logger
  * Domain Path: /languages
- * Requires at least: 5.0
+ * Requires at least: 5.7
  * Requires PHP: 7.2
- * License: GPL v2 or later
- * License URI:  
+ * License: Subscription-based License
+ * License URI: https://cdn.netpeak.dev/license-information
+ * Requires Plugins: netpeak-tools
  * ███╗   ██╗███████╗████████╗██████╗ ███████╗ █████╗ ██╗  ██╗
  * ████╗  ██║██╔════╝╚══██╔══╝██╔══██╗██╔════╝██╔══██╗██║ ██╔╝
  * ██╔██╗ ██║█████╗     ██║   ██████╔╝█████╗  ███████║█████╔╝ 
@@ -50,8 +51,10 @@ use NetpeakLogger\Logger;
 use NetpeakLogger\LoggerManager;
 use NetpeakLogger\Admin;
 use NetpeakLogger\AjaxHandler;
+use NetpeakLogger\WP_GitHub_Updater;
 use NetpeakLogger\Creator\Init;
 use NetpeakLogger\Render\AdminRenderer;
+use NetpeakLogger\Render\RenderFilters;
 
 /**
  * Plugin Lifecycle Hooks
@@ -63,14 +66,38 @@ register_uninstall_hook(__FILE__, [Init::class, 'netpeak_uninstall']);
  * Initialize Components
  */
 add_action('init', [Init::class, 'hooks']);
+add_action('init', [Logger::class, 'hooks']);
 add_action('init', [LoggerManager::class, 'init']);
 add_action('admin_menu', [Admin::class, 'init']);
+add_action('after_setup_theme', [Init::class, 'register_cron_event']);
 add_action('admin_post_netpeak_add_commit', [AjaxHandler::class, 'handle_add_commit']);
 add_action('wp_ajax_switch_settings_tab', [AjaxHandler::class, 'switch_settings_tab']);
 add_action('wp_ajax_settings_form_submit', [AjaxHandler::class, 'handle_settings_form_submit']);
 add_action('admin_post_delete_commit', [AjaxHandler::class, 'handle_delete_commit']);
 add_action('admin_post_edit_commit', [AjaxHandler::class, 'handle_edit_commit']);
 add_action('wp_ajax_bulk_edit_logs', [AjaxHandler::class, 'handle_bulk_edit_logs']);;
+
+
+new WP_GitHub_Updater(array(
+    'slug' => plugin_basename( __FILE__ ),
+    'proper_folder_name' => dirname( plugin_basename( __FILE__ ) ),
+    'api_url' => 'https://api.github.com/repos/VsevolodKrasovskyi/netpeak-logger', 
+    'raw_url' => 'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/master', 
+    'github_url' => 'https://github.com/VsevolodKrasovskyi/netpeak-logger', 
+    'zip_url' => 'https://github.com/VsevolodKrasovskyi/netpeak-logger/zipball/master', 
+    'sslverify' => true, 
+    'requires' => '5.2', 
+    'tested' => '6.7.1', 
+    'readme' => 'README.md', 
+    'access_token' => '', 
+    'screenshots' => array(
+        'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/master/changelog/screenshots/screenshot1.png',
+        'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/master/changelog/screenshots/screenshot2.png',
+        'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/master/changelog/screenshots/screenshot3.png',
+        'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/master/changelog/screenshots/screenshot4.png',
+    ),
+    'banner'=> 'https://images.netpeak.net/blog/main_691d938eb457d4bc06eae9c59d8cc216c3a161c8.png'
+));
 
 /**
  * Enqueue Admin Assets
@@ -136,6 +163,13 @@ add_action('admin_enqueue_scripts', function() {
         wp_enqueue_script(
             'netpeak-logger-bulk-actions',
             NETPEAK_LOGGER_URL . 'assets/js/bulk-editor.js',
+            [],
+            NETPEAK_LOGGER_VERSION,
+            true
+        );
+        wp_enqueue_script(
+            'netpeak-logger-pagination-logs',
+            NETPEAK_LOGGER_URL . 'assets/js/pagination.js',
             [],
             NETPEAK_LOGGER_VERSION,
             true

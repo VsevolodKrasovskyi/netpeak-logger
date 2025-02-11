@@ -188,6 +188,55 @@ class AdminRenderer
                     <span class="short-message">' . esc_html($short_message) . '</span>
                 </div>';
     }
+    /**
+     * Render pagination controls
+     *
+     * @param int $total_records Total number of logs found
+     * @param int $limit Number of logs per page
+     * @param int $current_page Current page number
+     */
+    public static function pagination($total_records, $limit, $current_page, $filters = [])
+    {
+        ?>
+        <div class="pagination-logs" style="margin-top: 20px;">
+            <form id="pagination-form" method="POST" action="<?php echo admin_url('admin.php?page=netpeak-logs' . '&' . http_build_query(array_filter($filters))); ?>" data-total-pages="<?php echo esc_attr(ceil($total_records / $limit)); ?>">
+                <input type="hidden" name="pagination_page" id="pagination-page" value="<?php echo esc_attr($current_page); ?>">
+                <?php foreach ($filters as $filter_name => $filter_value) : ?>
+                    <input type="hidden" name="<?php echo esc_attr($filter_name); ?>" value="<?php echo esc_attr($filter_value); ?>">
+                <?php endforeach; ?>
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div id="records-limit">
+                        <p><strong><?php echo esc_html($total_records); ?></strong> <?php esc_html_e('Logs found', 'netpeak-logger'); ?></p>
+                        <label for="records-per-page"><?php esc_html_e('Records per page:', 'netpeak-logger'); ?></label>
+                        <select id="records-per-page" name="pagination_limit">
+                            <option value="10" <?php selected($limit, 10); ?>>10</option>
+                            <option value="25" <?php selected($limit, 25); ?>>25</option>
+                            <?php if ($total_records >= 50) : ?>
+                                <option value="50" <?php selected($limit, 50); ?>>50</option>
+                            <?php endif; ?>
+                            <?php if ($total_records >= 100) : ?>
+                                <option value="100" <?php selected($limit, 100); ?>>100</option>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+
+                    <div id="pagination-buttons" style="text-align: right;">
+                        <button type="button" id="prev-page" class="button" <?php disabled($current_page <= 1); ?>>
+                            <?php esc_html_e('Previous', 'netpeak-logger'); ?>
+                        </button>
+                        <span id="current-page-info">
+                            <?php printf(esc_html__('Page %d of %d', 'netpeak-logger'), $current_page, ceil($total_records / $limit)); ?>
+                        </span>
+                        <button type="button" id="next-page" class="button" <?php disabled($current_page >= ceil($total_records / $limit)); ?>>
+                            <?php esc_html_e('Next', 'netpeak-logger'); ?>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <?php
+    }
 }
 
 

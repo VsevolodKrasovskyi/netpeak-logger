@@ -14,6 +14,11 @@ use NetpeakLogger\Loggers\UserLogger;
 use NetpeakLogger\Loggers\CommentLogger;
 use NetpeakLogger\Loggers\EmailLogger;
 
+if ( ! function_exists( 'is_plugin_active' ) ) {
+    require_once ABSPATH . 'wp-admin/includes/plugin.php';
+}
+
+
 class LoggerManager {
     /**
      * Initialize all loggers

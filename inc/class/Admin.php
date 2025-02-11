@@ -49,7 +49,7 @@ class Admin {
             'manage_options',
             'netpeak-logs',
             [AdminRenderer::class, 'render_logs_page'],
-            'dashicons-archive'
+            NETPEAK_LOGGER_URL . 'assets/img/netpeak-icon.svg'
         );
 
         // Add admin bar menu item

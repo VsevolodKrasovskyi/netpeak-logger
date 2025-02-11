@@ -1,7 +1,9 @@
 <?php
 namespace NetpeakLogger;
 use NetpeakLogger\Render\AdminRenderer;
+use NetpeakLogger\Render\RenderFilters;
 use NetpeakLogger\Admin;
+use NetpeakLogger\Logger;
 
 class AjaxHandler {
 
@@ -43,7 +45,7 @@ class AjaxHandler {
         ];
 
         $wpdb->insert($table_name, $data);
-
+        Logger::send_commit_report($data);
         wp_redirect(admin_url('admin.php?page=netpeak-logs&tab=logs'));
         exit;
     }
@@ -102,6 +104,9 @@ class AjaxHandler {
         elseif ($settings_tab == 'telegram') {
             include NETPEAK_LOGGER_COMPONENTS_ADMIN . 'settings/telegram.php';
         } 
+        elseif ($settings_tab == 'reports') {
+            include NETPEAK_LOGGER_COMPONENTS_ADMIN . 'settings/reports.php';
+        } 
         exit;
     }
     public static function handle_settings_form_submit() {
@@ -119,10 +124,16 @@ class AjaxHandler {
             update_option('netpeak_email_logger_enabled', isset($_POST['netpeak_email_logger_enabled']) ? 1 : 0);
         } 
         elseif ($settings_tab === 'telegram') {
-            update_option('netpeak_daily_report_enabled', isset($_POST['netpeak_daily_report_enabled']) ? 1 : 0);
+            update_option('netpeak_daily_telegram_report_enabled', isset($_POST['netpeak_daily_telegram_report_enabled']) ? 1 : 0);
             update_option('netpeak_check_error_log', isset($_POST['netpeak_check_error_log']) ? 1 : 0);
             update_option('netpeak_telegram_bot_token', $_POST['netpeak_telegram_bot_token']);
         } 
+        elseif ($settings_tab === 'reports') {
+            update_option('netpeak_daily_email_report_enabled', isset($_POST['netpeak_daily_email_report_enabled']) ? 1 : 0);
+            update_option('netpeak_commit_report_enabled', isset($_POST['netpeak_commit_report_enabled']) ? 1 : 0);
+            update_option('netpeak_report_emails', $_POST['netpeak_report_emails']);
+        }
+
         else {
             wp_send_json_error(['message' => __('Invalid settings tab.', 'netpeak-logger')]);
         }
@@ -188,5 +199,4 @@ class AjaxHandler {
     
         wp_send_json_success(['message' => __('Bulk action completed successfully.', 'netpeak-logger')]);
     }
-
 }

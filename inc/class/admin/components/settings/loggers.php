@@ -10,6 +10,12 @@
                         <?php checked(1, get_option('netpeak_post_logger_enabled', 1)); ?> />
                     <span class="slider"></span>
                 </label>
+                <div class="tooltip" style="margin-left:20px;">
+                <span class="tooltip-icon">?</span>
+                    <div class="tooltip-content">
+                        <p><?php _e('Enables logging of posts (Deleting, editing, scheduling, status changes)','netpeak-logger');?></p>
+                    </div>
+                </div>
             </td>
         </tr>
         <tr>
@@ -20,6 +26,12 @@
                         <?php checked(1, get_option('netpeak_plugin_logger_enabled', 1)); ?> />
                     <span class="slider"></span>
                 </label>
+                <div class="tooltip" style="margin-left:20px;">
+                <span class="tooltip-icon">?</span>
+                    <div class="tooltip-content">
+                        <p><?php _e('Enables logging of plugins(install,uninstall, update, activate, deactivate)','netpeak-logger');?></p>
+                    </div>
+                </div>
             </td>
         </tr>
         <tr>
@@ -30,6 +42,12 @@
                         <?php checked(1, get_option('netpeak_user_logger_enabled', 1)); ?> />
                     <span class="slider"></span>
                 </label>
+                <div class="tooltip" style="margin-left:20px;">
+                <span class="tooltip-icon">?</span>
+                    <div class="tooltip-content">
+                        <p><?php _e('Enables user logging(Deleting, editing, creating)','netpeak-logger');?></p>
+                    </div>
+                </div>
             </td>
         </tr>
         <tr>
@@ -40,6 +58,12 @@
                         <?php checked(1, get_option('netpeak_comment_logger_enabled', 1)); ?> />
                     <span class="slider"></span>
                 </label>
+                <div class="tooltip" style="margin-left:20px;">
+                <span class="tooltip-icon">?</span>
+                    <div class="tooltip-content">
+                        <p><?php _e('Enables logging of comments (creating, editing, deleting, status changes)','netpeak-logger');?></p>
+                    </div>
+                </div>
             </td>
         </tr>
         <tr>
@@ -53,6 +77,13 @@
                             <?php checked(1, get_option('netpeak_email_logger_enabled', 1)); ?> />
                         <span class="slider"></span>
                     </label>
+                    <div class="tooltip" style="margin-left:20px;">
+                    <span class="tooltip-icon">?</span>
+                    <div class="tooltip-content">
+                        <img class="tooltip-image" src="<?php echo NETPEAK_LOGGER_URL . '/assets/img/email-logs.png'; ?>" alt="Описание"/>
+                        <p><?php _e('Enables logging of Email (Sendler, Recipient, Status, Subject, Message)','netpeak-logger');?></p>
+                    </div>
+                </div>
                 </td>
                 <?php
                 } else {

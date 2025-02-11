@@ -64,3 +64,70 @@
     margin-bottom: 0;
     color: black;
 }
+
+
+/* Pagination */
+
+.pagination-logs {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    align-items: center;
+}
+
+#records-limit {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+#records-limit label {
+    font-weight: bold;
+}
+
+#records-per-page {
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#pagination-buttons button {
+    padding: 5px 10px;
+    font-size: 14px;
+    border: 1px solid #007cba;
+    background-color: #007cba;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#pagination-buttons button:hover {
+    background-color: #005a8c;
+}
+
+#pagination-buttons button:disabled {
+    background-color: #e1e1e1;
+    border-color: #ccc;
+    color: #888;
+    cursor: not-allowed;
+}
+
+#current-page-info {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.pagination-logs p {
+    margin: 0;
+    font-size: 14px;
+}

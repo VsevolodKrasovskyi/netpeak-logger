@@ -107,10 +107,40 @@ class Init {
         register_setting('netpeak-logger-settings-loggers', 'netpeak_comment_logger_enabled');
         register_setting('netpeak-logger-settings-loggers', 'netpeak_email_logger_enabled');
         //Telegram API
-        register_setting('netpeak-logger-settings-telegram', 'netpeak_daily_report_enabled');
+        register_setting('netpeak-logger-settings-telegram', 'netpeak_daily_telegram_report_enabled');
         register_setting('netpeak-logger-settings-telegram', 'netpeak_check_error_log');
         register_setting('netpeak-logger-settings-telegram', 'netpeak_telegram_bot_token');
+        //Report settings
+        register_setting('netpeak-logger-report-settings', 'netpeak_daily_email_report_enabled');
+        register_setting('netpeak-logger-report-settings', 'netpeak_commit_report_enabled');
+        register_setting('netpeak-logger-report-settings', 'netpeak_report_emails',[
+            'type' => 'array',
+            'sanitize_callback' => [self::class, 'netpeak_sanitize_emails'],
+            'default' => []
+
+        ]);
     }
+
+    public static function netpeak_sanitize_emails($input) {
+        if (is_string($input)) {
+            $input = explode(',', $input);
+        }
+    
+        $emails = array_map('trim', $input);    
+        $emails = array_filter($emails, 'is_email');  
+    
+        return $emails;
+    }
+
+    public static function register_cron_event()
+    {
+        if(!wp_next_scheduled('netpeak_daily_cron'))
+        {
+            $timezone_offset = get_option('gmt_offset') * HOUR_IN_SECONDS;
+            $timestamp = strtotime('23:00:00') - $timezone_offset;
+            wp_schedule_event($timestamp, 'daily', 'netpeak_daily_cron'); 
+        }
+    } 
 
     public static function netpeak_delete_settings() {
         $options = [
@@ -120,8 +150,10 @@ class Init {
             'netpeak_comment_logger_enabled',
             'netpeak_email_logger_enabled',
             'netpeak_telegram_bot_token',
-            'netpeak_daily_report_enabled',
+            'netpeak_daily_telegram_report_enabled',
             'netpeak_check_error_log',
+            'netpeak_daily_email_report_enabled',
+            'netpeak_commit_report_enabled'
         ];
         foreach ($options as $option) {
             delete_option($option);

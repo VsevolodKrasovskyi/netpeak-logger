@@ -75,7 +75,7 @@ function updateSettings() {
         .then(data => {
             if (data.success) {
                 alert(data.data.message);
-                window.location.reload();
+                // window.location.reload();
             } else {
                 alert('Error saving settings');
             }
@@ -87,3 +87,5 @@ function updateSettings() {
     });
     }
 };
+
+
