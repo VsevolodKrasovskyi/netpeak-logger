@@ -12,7 +12,6 @@
  * Requires PHP: 7.2
  * License: Subscription-based License
  * License URI: https://cdn.netpeak.dev/license-information
- * Requires Plugins: netpeak-tools
  * ███╗   ██╗███████╗████████╗██████╗ ███████╗ █████╗ ██╗  ██╗
  * ████╗  ██║██╔════╝╚══██╔══╝██╔══██╗██╔════╝██╔══██╗██║ ██╔╝
  * ██╔██╗ ██║█████╗     ██║   ██████╔╝█████╗  ███████║█████╔╝ 
@@ -78,26 +77,29 @@ add_action('admin_post_edit_commit', [AjaxHandler::class, 'handle_edit_commit'])
 add_action('wp_ajax_bulk_edit_logs', [AjaxHandler::class, 'handle_bulk_edit_logs']);;
 
 
-new WP_GitHub_Updater(array(
-    'slug' => plugin_basename( __FILE__ ),
-    'proper_folder_name' => dirname( plugin_basename( __FILE__ ) ),
-    'api_url' => 'https://api.github.com/repos/VsevolodKrasovskyi/netpeak-logger', 
-    'raw_url' => 'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/master', 
-    'github_url' => 'https://github.com/VsevolodKrasovskyi/netpeak-logger', 
-    'zip_url' => 'https://github.com/VsevolodKrasovskyi/netpeak-logger/zipball/master', 
-    'sslverify' => true, 
-    'requires' => '5.2', 
-    'tested' => '6.7.1', 
-    'readme' => 'README.md', 
-    'access_token' => '', 
-    'screenshots' => array(
-        'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/master/changelog/screenshots/screenshot1.png',
-        'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/master/changelog/screenshots/screenshot2.png',
-        'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/master/changelog/screenshots/screenshot3.png',
-        'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/master/changelog/screenshots/screenshot4.png',
-    ),
-    'banner'=> 'https://images.netpeak.net/blog/main_691d938eb457d4bc06eae9c59d8cc216c3a161c8.png'
-));
+add_action('admin_init', function() {
+    new WP_GitHub_Updater(array(
+        'slug' => plugin_basename( __FILE__ ),
+        'proper_folder_name' => dirname( plugin_basename( __FILE__ ) ),
+        'api_url' => 'https://api.github.com/repos/VsevolodKrasovskyi/netpeak-logger', 
+        'raw_url' => 'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/prod', 
+        'github_url' => 'https://github.com/VsevolodKrasovskyi/netpeak-logger', 
+        'zip_url' => 'https://github.com/VsevolodKrasovskyi/netpeak-logger/zipball/prod', 
+        'sslverify' => true, 
+        'requires' => '5.2', 
+        'tested' => '6.7.1', 
+        'readme' => 'README.md', 
+        'access_token' => '', 
+        'screenshots' => array(
+            'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/prod/changelog/screenshots/screenshot1.png',
+            'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/prod/changelog/screenshots/screenshot2.png',
+            'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/prod/changelog/screenshots/screenshot3.png',
+            'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/prod/changelog/screenshots/screenshot4.png',
+        ),
+        'banner'=> 'https://images.netpeak.net/blog/main_691d938eb457d4bc06eae9c59d8cc216c3a161c8.png'
+
+    ));
+});
 
 /**
  * Enqueue Admin Assets
@@ -170,6 +172,13 @@ add_action('admin_enqueue_scripts', function() {
         wp_enqueue_script(
             'netpeak-logger-pagination-logs',
             NETPEAK_LOGGER_URL . 'assets/js/pagination.js',
+            [],
+            NETPEAK_LOGGER_VERSION,
+            true
+        );
+        wp_enqueue_script(
+            'netpeak-logger-tooltip',
+            NETPEAK_LOGGER_URL . 'assets/js/tooltip.js',
             [],
             NETPEAK_LOGGER_VERSION,
             true

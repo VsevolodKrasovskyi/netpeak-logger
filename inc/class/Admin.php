@@ -61,6 +61,7 @@ class Admin {
                     'href'  => admin_url('admin.php?page=netpeak-logs'),
                     'meta'  => [
                         'title' => __('Netpeak Logs'),
+                        'class' => 'netpeak-logs-admin-bar',
                     ],
                 ]);
             }

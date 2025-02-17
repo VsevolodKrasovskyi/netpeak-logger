@@ -613,3 +613,50 @@ input:checked+.slider:before {
     max-width: 90vw;
     max-height: 90vh;
 }
+
+.netpeak-nav-tab {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-right: 5px;
+    background-color: #f1f1f1;
+    color: var(--netpeak-main-color);
+    text-decoration: none;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.netpeak-nav-tab-active {
+    background-color: var(--netpeak-main-color) !important;
+    color: #ffffff !important;
+    cursor: default;
+}
+
+.netpeak-nav-tab:hover,
+.netpeak-nav-tab:focus {
+    background-color: var(--netpeak-main-color);
+    color: #ffffff;
+}
+
+.netpeak-tab-content {
+    border: 1px solid #ccc;
+    padding: 20px;
+    background-color: #fff;
+    display: none;
+}
+
+.netpeak-tab-content.netpeak-active {
+    display: block;
+}
+
+.netpeak-tab-content h2 {
+    margin-top: 0;
+}
+
+.netpeak-tab-content p {
+    margin-bottom: 0;
+    color: black;
+}

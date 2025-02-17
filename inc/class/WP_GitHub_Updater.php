@@ -1,5 +1,6 @@
 <?php
 namespace NetpeakLogger;
+use NetpeakLogger\Parsedown;
 // Prevent loading this file directly and/or if the class is already defined
 if ( ! defined( 'ABSPATH' ) || class_exists( 'WPGitHubUpdater' ) || class_exists( 'WP_GitHub_Updater' ) )
 	return;
@@ -69,21 +70,25 @@ class WP_GitHub_Updater {
 		add_action( 'admin_footer', function() {
 			?>
 			<script>
-				jQuery(document).ready(function($) {
-					$('.check-update-link').on('click', function(e) {
-						e.preventDefault();
-						const $button = $(this);
-						$button.text('Checking...');
-						$.post(ajaxurl, { action: 'check_plugin_update' }, function(response) {
-							if (response.success) {
-								alert('Update check completed successfully.');
-							} else {
-								alert('Error: ' + response.data);
-							}
-							$button.text('Check Update');
-						});
-					});
-				});
+				document.addEventListener('DOMContentLoaded', function() {
+					const updateButton = document.querySelector('.netpeak-logger-update');
+					if ( updateButton ) {
+						updateButton.addEventListener('click', e=> {
+							e.preventDefault();
+							updateButton.textContent = 'Checking...';
+							
+							fetch(ajaxurl, {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+								body: new URLSearchParams({ action: 'check_plugin_update' })
+							})
+							.then(response => response.json())
+							.then(data => {
+								updateButton.textContent = 'Check Update';
+							})
+						})
+					}
+				})
 			</script>
 			<?php
 		});
@@ -345,7 +350,6 @@ class WP_GitHub_Updater {
 	 * @return object $transient updated plugin data transient
 	 */
 	public function api_check( $transient ) {
-
 		
 		if ( isset( $transient->response[ $this->config['slug'] ] ) ) {
 			unset( $transient->response[ $this->config['slug'] ] );
@@ -362,7 +366,7 @@ class WP_GitHub_Updater {
 		$update = version_compare( $this->config['new_version'], $this->config['version'] );
 
 		if ( 1 === $update ) {
-			$response = new stdClass;
+			$response = new \stdClass;
 			$response->new_version = $this->config['new_version'];
 			$response->slug = $this->config['proper_folder_name'];
 			$response->url = add_query_arg( array( 'access_token' => $this->config['access_token'] ), $this->config['github_url'] );
@@ -375,6 +379,7 @@ class WP_GitHub_Updater {
 
 		return $transient;
 	}
+
 
 	/**
 	 * Get changelog from GitHub
@@ -401,12 +406,6 @@ class WP_GitHub_Updater {
 		if (empty($body)) {
 			return 'Changelog is empty or not found.';
 		}
-
-		if (!class_exists('Parsedown')) {
-			require_once NETPEAK_SEO_PLUGIN_DIR . 'inc/functions/Parsedown.php';
-		}
-	
-		// Return file contents changelog.txt
 		$Parsedown = new Parsedown();
     	return $Parsedown->text($body); 
 	}
@@ -448,8 +447,6 @@ class WP_GitHub_Updater {
 		if ( !isset( $response->slug ) || dirname( $this->config['slug'] ) != $response->slug ) {
 			return false;
 		}
-		
-		
 		$response->slug = $this->config['slug'];
 		$response->name = $this->config['plugin_name'];
 		$response->version = $this->config['new_version'];
@@ -471,12 +468,21 @@ class WP_GitHub_Updater {
 		return $response;
 	}
 
+	/**
+	 * Add a button to the plugin row that allows user to check for an update
+	 *
+	 * @since 1.0
+	 * @param array  $links the links that will be displayed in the plugin row
+	 * @param string $file  the plugin file
+	 * @return array the modified links
+	 */
 	public function add_check_update_button( $links, $file ) {
 		if ( $file === $this->config['slug'] ) {
-			$links[] = '<a href="#" class="check-update-link" data-plugin="' . esc_attr( $file ) . '">Check Update</a>';
+			$links[] = '<a href="#" class="netpeak-logger-update" data-plugin="' . esc_attr( $file ) . '">Check Update</a>';
 		}
 		return $links;
 	}
+
 
 	public function ajax_check_update() {
 		if ( ! current_user_can( 'update_plugins' ) ) {
@@ -484,10 +490,35 @@ class WP_GitHub_Updater {
 			return;
 		}
 	
+		// Clearing the update cache
 		delete_site_transient( 'update_plugins' );
 		delete_site_transient( md5($this->config['slug']).'_github_data' );
+	
+		// Forced to get a new version of the plugin
+		$this->get_github_data();
+		$this->config['new_version'] = $this->get_new_version();
+	
+		// Forcibly run an update check
+		$transient = get_site_transient( 'update_plugins' );
+		if (!is_object($transient)) {
+			$transient = new \stdClass();
+		}
+	
+		$update = version_compare( $this->config['new_version'], $this->config['version'], '>' );
+		if ($update) {
+			$response = new \stdClass();
+			$response->new_version = $this->config['new_version'];
+			$response->slug = $this->config['proper_folder_name'];
+			$response->url = add_query_arg( array( 'access_token' => $this->config['access_token'] ), $this->config['github_url'] );
+			$response->package = $this->config['zip_url'];
+	
+			$transient->response[ $this->config['slug'] ] = $response;
+		}
+
+		set_site_transient( 'update_plugins', $transient ); // Save changes
 		wp_send_json_success( 'Update check completed successfully.' );
 	}
+	
 	
 	
 	/**
