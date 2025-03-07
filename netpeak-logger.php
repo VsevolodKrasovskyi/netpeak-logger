@@ -3,7 +3,7 @@
  * Plugin Name: Netpeak Logger
  * Plugin URI: https://cdn.netpeak.dev/
  * Description: Tracks changes in WordPress and logs activity. Provides comprehensive logging functionality for developers and administrators.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Netpeak Dev Team
  * Author URI: https://netpeak.dev/
  * Text Domain: netpeak-logger
@@ -50,7 +50,7 @@ use NetpeakLogger\EmailNotifier;
 use NetpeakLogger\LoggerManager;
 use NetpeakLogger\Admin;
 use NetpeakLogger\AjaxHandler;
-use NetpeakLogger\WP_GitHub_Updater;
+use NetpeakLogger\Git_Update_Netpeak;
 use NetpeakLogger\Creator\Init;
 use NetpeakLogger\Render\AdminRenderer;
 use NetpeakLogger\Render\RenderFilters;
@@ -80,13 +80,13 @@ add_action('wp_ajax_bulk_edit_logs', [AjaxHandler::class, 'handle_bulk_edit_logs
 
 
 function load_updater() {
-    new WP_GitHub_Updater(array(
+    new Git_Update_Netpeak(array(
         'slug' => plugin_basename( __FILE__ ),
         'proper_folder_name' => dirname( plugin_basename( __FILE__ ) ),
         'api_url' => 'https://api.github.com/repos/VsevolodKrasovskyi/netpeak-logger', 
         'raw_url' => 'https://raw.githubusercontent.com/VsevolodKrasovskyi/netpeak-logger/prod', 
         'github_url' => 'https://github.com/VsevolodKrasovskyi/netpeak-logger', 
-        'zip_url' => 'https://github.com/VsevolodKrasovskyi/netpeak-logger/zipball/prod', 
+        'zip_url' => 'https://github.com/VsevolodKrasovskyi/netpeak-logger/archive/refs/heads/prod.zip', 
         'sslverify' => true, 
         'requires' => '5.7', 
         'tested' => '6.7.1', 

@@ -13,6 +13,7 @@
 - Fixed serialization issues with email report settings.
 - Corrected bugs in the report delivery system.
 - Fixed authentication token generation for email-based auto-login.
+- Fixed caching issues with plugin updates.
 
 ### New Features
 - Implemented one-time authentication tokens for email login.
