@@ -1,6 +1,10 @@
 {
     "name": "netpeak/netpeak-logger",
-    "type": "library",
+    "description": "Tracks changes in WordPress and logs activity. Provides comprehensive logging functionality for developers and administrators.",
+    "keywords": ["wordpress", "logger", "netpeak", "activity log"],
+    "license": "proprietary",
+    "homepage": "https://cdn.netpeak.dev/",
+    "type": "project",
     "autoload": {
         "psr-4": {
             "NetpeakLogger\\Loggers\\": "inc/class/loggers/",
@@ -11,8 +15,25 @@
     "authors": [
         {
             "name": "Masik",
-            "email": "v.krasovskyi@netpeak.dev"
+            "email": "v.krasovskyi@netpeak.dev",
+            "role": "Developer",
+            "homepage": "https://gravatar.com/vkrasovskyi"
         }
     ],
-    "require": {}
+    "require": {
+        "php": ">=7.4"
+    },
+
+    "config": {
+        "optimize-autoloader": true
+    },
+
+    "extra": {
+        "subscription": {
+            "model": "paid",
+            "billing": ["monthly", "annual"],
+            "activation_required": true
+        }
+    }
+
 }

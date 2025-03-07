@@ -139,7 +139,7 @@ class RenderFilters {
     public static function render_filters($table_name, $filters_config, $hidden_fields = []) {
         global $wpdb;
     
-        echo '<form method="GET" action="">';
+        echo '<form method="GET" action="" class="netpeak-filter-form">';
     
         foreach ($hidden_fields as $name => $value) {
             echo '<input type="hidden" name="' . esc_attr($name) . '" value="' . esc_attr($value) . '">';
@@ -158,7 +158,9 @@ class RenderFilters {
         }
     
         echo '<button type="submit" class="button">Filter</button>';
+        echo '<button type="button" class="button" id="clear-filters">Clear</button>';
         echo '</form>';
+        
 
         AdminRenderer::bulk_edit_actions();
     }

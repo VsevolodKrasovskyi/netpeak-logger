@@ -57,7 +57,6 @@ class PostLogger extends Logger {
 
         return null;
     }
-
     /**
      * Handle post updated event
      *
@@ -83,8 +82,16 @@ class PostLogger extends Logger {
 
 
         if ($post_before->post_content !== $post_after->post_content) {
-            $changes[] = 'content updated';
+            $revision_link = self::get_latest_revision_link($post_after->ID);
+            
+            $editor = get_post_meta($post_after->ID, '_elementor_edit_mode', true) === 'builder' ? 'Elementor' : 'Classic Editor';
+        
+            $changes[] = sprintf('content updated via %s %s', 
+                $editor, 
+                ($revision_link ? ' <a href="' . $revision_link . '" target="_blank">View Revision</a> ' : '')
+            );
         }
+        
 
         if (!empty($changes)) {
             return sprintf('Updated %s: "%s" (%s)', $post_type_label, $post_after->post_title, implode(', ', $changes));
@@ -103,6 +110,10 @@ class PostLogger extends Logger {
      */
     private static function handle_status_transition($new_status, $old_status, $post) {
         if (self::should_skip_post($post)) {
+            return null;
+        }
+
+        if($new_status === $old_status) {
             return null;
         }
 
@@ -186,4 +197,46 @@ class PostLogger extends Logger {
             || wp_is_post_revision($post->ID)
             || wp_is_post_autosave($post->ID);
     }
+
+    private static function get_latest_revision_link($post_id) {
+        global $wpdb;
+    
+        $is_elementor = get_post_meta($post_id, '_elementor_edit_mode', true) === 'builder';
+    
+        if ($is_elementor) {
+            $revision_id = $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT ID FROM $wpdb->posts 
+                    WHERE post_parent = %d 
+                    AND post_type = 'revision' 
+                    AND post_status = 'inherit' 
+                    ORDER BY post_date DESC 
+                    LIMIT 1",
+                    $post_id
+                )
+            );
+    
+            if ($revision_id) {
+                return admin_url('post.php?post=' . $revision_id . '&action=elementor');
+            }
+        } else {
+            $revisions = wp_get_post_revisions($post_id);
+    
+            if (!empty($revisions)) {
+                $latest_revision = reset($revisions);
+                return admin_url('revision.php?revision=' . $latest_revision->ID);
+            }
+        }
+    
+        return null;
+    }
+
+    /**
+     * Detect changes in metadata (category, thumbnail, author)
+     *
+     * @param int $post_id Post ID.
+     * @param WP_Post $post_before Post object before update.
+     * @param WP_Post $post_after Post object after update.
+     * @return array List of metadata changes
+     */
 }

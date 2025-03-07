@@ -14,8 +14,11 @@ class AdminRenderer
             'logs' => 'Logs',
             'email_logs' => 'Email Logs',
             'commits' => 'Commits',
-            'settings' => 'Settings',
+            
         ];
+        if (current_user_can('netpeak_pm')) {
+            $tabs['settings'] = 'Settings';
+        }
         
         $output = '';
         foreach ($tabs as $tab => $label) {
@@ -151,10 +154,10 @@ class AdminRenderer
         if ($user_email === 'wordpress@wordpress.org') {
             $avatar = '<img src=" ' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/wordpress.png'). '" width="40" alt="System User" style="border-radius: 50%;">';
             $display_name = 'WordPress System (Cron)';
-        } else {
-
+        } else {     
             $user = get_user_by('email', $user_email);
-            $avatar = $user ? get_avatar($user->ID, 40) : '<div style="width: 40px; height: 40px; background: #ccc; border-radius: 50%;"></div>';
+            $avatar = '<img src="' . esc_url(get_avatar_url($user->ID, ["size" => 40])) . '" width="40" height="40" alt="User Avatar">';
+
             $display_name = $user ? esc_html($user->display_name) : esc_html($user_email); 
         }
 

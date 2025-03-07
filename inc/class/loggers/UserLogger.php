@@ -76,12 +76,25 @@ class UserLogger extends Logger {
      */
     private static function handle_profile_update($user_id, $old_user_data) {
         $user = get_userdata($user_id);
+        
         if ($user) {
-            return sprintf('User profile updated: "%s"', $user->user_login);
+            $changes = [];
+            $fields = ['user_login', 'user_email', 'display_name', 'first_name', 'last_name', 'nickname'];
+
+            foreach ($fields as $field) {
+                if ($old_user_data->$field !== $user->$field) {
+                    $changes[] = sprintf('%s changed from "%s" to "%s"', $field, $old_user_data->$field, $user->$field);
+                }
+            }
+
+            if (!empty($changes)) {
+                return sprintf('User profile updated: "%s" (%s)', $user->user_login, implode(', ', $changes));
+            }
         }
 
         return null;
     }
+
 
     /**
      * Handle user deletion event

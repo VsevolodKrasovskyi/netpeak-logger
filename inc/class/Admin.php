@@ -46,7 +46,7 @@ class Admin {
         add_menu_page(
             'Netpeak Logs',
             'Netpeak Logs',
-            'manage_options',
+            'netpeak_pm',
             'netpeak-logs',
             [AdminRenderer::class, 'render_logs_page'],
             NETPEAK_LOGGER_URL . 'assets/img/netpeak-icon.svg'
@@ -54,9 +54,9 @@ class Admin {
 
         // Add admin bar menu item
         add_action('admin_bar_menu', function ($admin_bar) {
-            if (current_user_can('manage_options')) {
+            if (current_user_can('netpeak_pm')) {
                 $admin_bar->add_menu([
-                    'id'    => 'netpeak-logs',
+                    'id'    => 'netpeak',
                     'title' => __('Logs', 'netpeak-logger'),
                     'href'  => admin_url('admin.php?page=netpeak-logs'),
                     'meta'  => [

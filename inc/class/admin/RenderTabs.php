@@ -16,7 +16,7 @@ class RenderTabs extends AdminRenderer{
     
         $filters = [
             'user_login' => $_GET['user'] ?? null,
-            'action'     => $_GET['action'] ?? null,
+            'action'     => $_GET['actions'] ?? null,
             'log_type'   => $_GET['log_type'] ?? null,
             'is_archive'   => $_GET['is_archive'] ?? null,
         ];
@@ -129,7 +129,7 @@ class RenderTabs extends AdminRenderer{
                     [
                         'textarea_name' => 'commit_message',
                         'textarea_rows' => 20,
-                        'wpautop'       => 1,
+                        'wpautop'       => false,
                         'editor_height' => 200,
                         'media_buttons' => false,
                         'teeny'         => false,
@@ -181,6 +181,7 @@ class RenderTabs extends AdminRenderer{
                         'textarea_name' => 'message',
                         'textarea_rows' => 10,
                         'editor_height' => 250,
+                        'wpautop'       => false,
                         'media_buttons' => false,
                         'teeny'         => false,
                         'quicktags'     => true,

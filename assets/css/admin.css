@@ -660,3 +660,9 @@ input:checked+.slider:before {
     margin-bottom: 0;
     color: black;
 }
+
+.netpeak-filter-form
+{
+    display: flex;
+    gap:5px;
+}

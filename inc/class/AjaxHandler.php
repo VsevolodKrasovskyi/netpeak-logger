@@ -3,7 +3,7 @@ namespace NetpeakLogger;
 use NetpeakLogger\Render\AdminRenderer;
 use NetpeakLogger\Render\RenderFilters;
 use NetpeakLogger\Admin;
-use NetpeakLogger\Logger;
+use NetpeakLogger\EmailNotifier;
 
 class AjaxHandler {
 
@@ -37,7 +37,7 @@ class AjaxHandler {
         $commit_object = sanitize_text_field($_POST['commit_object'] ?? '');
 
         $data = [
-            'user_login' => $user->user_login,
+            'user_login' => $user->user_email,
             'action' => $commit_type,
             'log_type' => 'commit',
             'message' => $commit_message,
@@ -45,7 +45,7 @@ class AjaxHandler {
         ];
 
         $wpdb->insert($table_name, $data);
-        Logger::send_commit_report($data);
+        EmailNotifier::send_commit_report($data);
         wp_redirect(admin_url('admin.php?page=netpeak-logs&tab=logs'));
         exit;
     }
@@ -81,9 +81,13 @@ class AjaxHandler {
 
         $wpdb->update(
             $table_name,
-            ['message' => $message],
+            [
+                'message' => $message,
+                'created_at' => current_time('mysql'),
+            
+            ],
             ['id' => $id],
-            ['%s'],
+            ['%s','%s'],
             ['%d']
         );
 
@@ -131,7 +135,13 @@ class AjaxHandler {
         elseif ($settings_tab === 'reports') {
             update_option('netpeak_daily_email_report_enabled', isset($_POST['netpeak_daily_email_report_enabled']) ? 1 : 0);
             update_option('netpeak_commit_report_enabled', isset($_POST['netpeak_commit_report_enabled']) ? 1 : 0);
-            update_option('netpeak_report_emails', $_POST['netpeak_report_emails']);
+            if (isset($_POST['netpeak_report_emails'])) {
+                $emails = explode(',', $_POST['netpeak_report_emails']); 
+                $emails = array_map('trim', $emails); 
+                $emails = array_filter($emails, 'is_email'); 
+                update_option('netpeak_report_emails', $emails); 
+            }
+            
         }
 
         else {
