@@ -1,3 +1,8 @@
+# 1.0.2
+- Fixed bug with Updater_GIT class - conflicts with Netpeak Tools plugins
+
+---
+
 # v1.0.1 – Minor Bug Fixes & Enhancements (2025-03-06)
 
 ## Improvements

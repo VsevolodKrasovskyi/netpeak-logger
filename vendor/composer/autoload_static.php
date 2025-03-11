@@ -9,6 +9,7 @@ class ComposerStaticInitac5b44be14a1b9213226331a86347fec
     public static $prefixLengthsPsr4 = array (
         'N' => 
         array (
+            'Netpeak\\' => 8,
             'NetpeakLogger\\Render\\' => 21,
             'NetpeakLogger\\Loggers\\' => 22,
             'NetpeakLogger\\' => 14,
@@ -16,6 +17,10 @@ class ComposerStaticInitac5b44be14a1b9213226331a86347fec
     );
 
     public static $prefixDirsPsr4 = array (
+        'Netpeak\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src',
+        ),
         'NetpeakLogger\\Render\\' => 
         array (
             0 => __DIR__ . '/../..' . '/inc/class/admin',
@@ -32,15 +37,6 @@ class ComposerStaticInitac5b44be14a1b9213226331a86347fec
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'NetpeakLogger\\Admin' => __DIR__ . '/../..' . '/inc/class/Admin.php',
-        'NetpeakLogger\\AjaxHandler' => __DIR__ . '/../..' . '/inc/class/AjaxHandler.php',
-        'NetpeakLogger\\Logger' => __DIR__ . '/../..' . '/inc/class/Logger.php',
-        'NetpeakLogger\\LoggerManager' => __DIR__ . '/../..' . '/inc/class/LoggerManager.php',
-        'NetpeakLogger\\Loggers\\CommentLogger' => __DIR__ . '/../..' . '/inc/class/loggers/CommentLogger.php',
-        'NetpeakLogger\\Loggers\\PluginLogger' => __DIR__ . '/../..' . '/inc/class/loggers/PluginLogger.php',
-        'NetpeakLogger\\Loggers\\PostLogger' => __DIR__ . '/../..' . '/inc/class/loggers/PostLogger.php',
-        'NetpeakLogger\\Loggers\\UserLogger' => __DIR__ . '/../..' . '/inc/class/loggers/UserLogger.php',
-        'NetpeakLogger\\Render\\AdminRenderer' => __DIR__ . '/../..' . '/inc/class/admin/AdminRenderer.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

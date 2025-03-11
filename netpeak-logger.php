@@ -28,7 +28,7 @@ defined('ABSPATH') || exit;
  */
 define('NETPEAK_LOGGER_PATH', plugin_dir_path(__FILE__));
 define('NETPEAK_LOGGER_URL', plugin_dir_url(__FILE__));
-define('NETPEAK_LOGGER_VERSION', '1.0.1');
+define('NETPEAK_LOGGER_VERSION', '1.0.2');
 
 if ( ! defined( 'NETPEAK_LOGGER_COMPONENTS_ADMIN' ) ) {
     define( 'NETPEAK_LOGGER_COMPONENTS_ADMIN', NETPEAK_LOGGER_PATH . 'inc/class/admin/components/' );
@@ -50,7 +50,7 @@ use NetpeakLogger\EmailNotifier;
 use NetpeakLogger\LoggerManager;
 use NetpeakLogger\Admin;
 use NetpeakLogger\AjaxHandler;
-use NetpeakLogger\Git_Update_Netpeak;
+use Netpeak\Updater_GIT;
 use NetpeakLogger\Creator\Init;
 use NetpeakLogger\Render\AdminRenderer;
 use NetpeakLogger\Render\RenderFilters;
@@ -80,7 +80,7 @@ add_action('wp_ajax_bulk_edit_logs', [AjaxHandler::class, 'handle_bulk_edit_logs
 
 
 function load_updater() {
-    new Git_Update_Netpeak(array(
+    new Updater_GIT(array(
         'slug' => plugin_basename( __FILE__ ),
         'proper_folder_name' => dirname( plugin_basename( __FILE__ ) ),
         'api_url' => 'https://api.github.com/repos/VsevolodKrasovskyi/netpeak-logger', 

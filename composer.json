@@ -9,7 +9,8 @@
         "psr-4": {
             "NetpeakLogger\\Loggers\\": "inc/class/loggers/",
             "NetpeakLogger\\Render\\": "inc/class/admin/",
-            "NetpeakLogger\\": "inc/class/"
+            "NetpeakLogger\\": "inc/class/",
+            "Netpeak\\": "src/"
         }
     },
     "authors": [
@@ -22,10 +23,6 @@
     ],
     "require": {
         "php": ">=7.4"
-    },
-
-    "config": {
-        "optimize-autoloader": true
     },
 
     "extra": {

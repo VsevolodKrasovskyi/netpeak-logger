@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Netpeak\\' => array($baseDir . '/src'),
     'NetpeakLogger\\Render\\' => array($baseDir . '/inc/class/admin'),
     'NetpeakLogger\\Loggers\\' => array($baseDir . '/inc/class/loggers'),
     'NetpeakLogger\\' => array($baseDir . '/inc/class'),
