@@ -31,7 +31,7 @@ define('NETPEAK_LOGGER_URL', plugin_dir_url(__FILE__));
 define('NETPEAK_LOGGER_VERSION', '1.0.2');
 
 if ( ! defined( 'NETPEAK_LOGGER_COMPONENTS_ADMIN' ) ) {
-    define( 'NETPEAK_LOGGER_COMPONENTS_ADMIN', NETPEAK_LOGGER_PATH . 'inc/class/admin/components/' );
+    define( 'NETPEAK_LOGGER_COMPONENTS_ADMIN', NETPEAK_LOGGER_PATH . 'inc/components/' );
 }
 
 /**

@@ -16,7 +16,7 @@ class AdminRenderer
             'commits' => 'Commits',
             
         ];
-        if (current_user_can('netpeak_pm')) {
+        if (current_user_can('netpeak_admin')) {
             $tabs['settings'] = 'Settings';
         }
         
@@ -60,9 +60,11 @@ class AdminRenderer
             RenderTabs::commit_tab();
             echo '</div>';
         } elseif ($active_tab === 'settings') { 
-            echo '<div id="settings" class="netpeak-tab-content netpeak-active">';
-            RenderTabs::settings_tab();
-            echo '</div>';
+            if(current_user_can('netpeak_admin')) {
+                echo '<div id="settings" class="netpeak-tab-content netpeak-active">';
+                RenderTabs::settings_tab();
+                echo '</div>';
+            }
 
         }elseif ($active_tab === 'edit_commit') {
             RenderTabs::edit_commit_page();
@@ -86,34 +88,37 @@ class AdminRenderer
      * a message indicating the absence of logs is displayed.
      */
     protected static function render_actions($log)
-{
-    $is_archive = isset($_GET['is_archive']) ? intval($_GET['is_archive']) : 0;
-    $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : '';
-    $page = isset($_GET['page']) ? sanitize_text_field($_GET['page']) : '';
-
-    $is_logs = ($tab === 'logs' || ($page === 'netpeak-logs' && $tab !== 'email_logs'));
-    $is_email_logs = ($tab === 'email_logs');
-
-    $actions = [];
-
-    if ($is_logs) {
-        $actions[] = '<a href="' . esc_url(admin_url('admin.php?page=netpeak-logs&tab=edit_commit&id=' . $log->id)) . '"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/edit.png') . '" alt="Edit" width="16" height="16"></a>';
-    }
-
-    $actions[] = '<a href="' . esc_url(admin_url('admin-post.php?action=delete_commit&id=' . $log->id)) . '" class="delete-commit" onclick="return confirm(\'Are you sure you want to delete?\')"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/delete.png') . '" alt="Delete" width="16" height="16"></a>';
-
-    $log_type = $is_logs ? 'logs' : ($is_email_logs ? 'email' : '');
-
-    if ($log_type) {
-        if ($is_archive === 0) {
-            $actions[] = '<a href="#" class="archive-log" data-log-id="' . esc_attr($log->id) . '" data-log-type="' . esc_attr($log_type) . '"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/box.png') . '" alt="Archive" width="16" height="16"></a>';
-        } elseif ($is_archive === 1) {
-            $actions[] = '<a href="#" class="unarchive-log" data-log-id="' . esc_attr($log->id) . '" data-log-type="' . esc_attr($log_type) . '"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/unbox.png') . '" alt="Unarchive" width="16" height="16"></a>';
+    {
+        if (!current_user_can('netpeak_admin')) {
+            return '';
         }
-    }
+        $is_archive = isset($_GET['is_archive']) ? intval($_GET['is_archive']) : 0;
+        $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : '';
+        $page = isset($_GET['page']) ? sanitize_text_field($_GET['page']) : '';
 
-    return implode(' | ', $actions);
-}
+        $is_logs = ($tab === 'logs' || ($page === 'netpeak-logs' && $tab !== 'email_logs'));
+        $is_email_logs = ($tab === 'email_logs');
+
+        $actions = [];
+
+        if ($is_logs) {
+            $actions[] = '<a href="' . esc_url(admin_url('admin.php?page=netpeak-logs&tab=edit_commit&id=' . $log->id)) . '"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/edit.png') . '" alt="Edit" width="16" height="16"></a>';
+        }
+
+        $actions[] = '<a href="' . esc_url(admin_url('admin-post.php?action=delete_commit&id=' . $log->id)) . '" class="delete-commit" onclick="return confirm(\'Are you sure you want to delete?\')"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/delete.png') . '" alt="Delete" width="16" height="16"></a>';
+
+        $log_type = $is_logs ? 'logs' : ($is_email_logs ? 'email' : '');
+
+        if ($log_type) {
+            if ($is_archive === 0) {
+                $actions[] = '<a href="#" class="archive-log" data-log-id="' . esc_attr($log->id) . '" data-log-type="' . esc_attr($log_type) . '"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/box.png') . '" alt="Archive" width="16" height="16"></a>';
+            } elseif ($is_archive === 1) {
+                $actions[] = '<a href="#" class="unarchive-log" data-log-id="' . esc_attr($log->id) . '" data-log-type="' . esc_attr($log_type) . '"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/unbox.png') . '" alt="Unarchive" width="16" height="16"></a>';
+            }
+        }
+
+        return implode(' | ', $actions);
+    }
 
 
     public static function bulk_edit_actions() {
@@ -156,6 +161,9 @@ class AdminRenderer
             $display_name = 'WordPress System (Cron)';
         } else {     
             $user = get_user_by('email', $user_email);
+            if (!$user) {
+                $avatar ='<img src=" ' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/wordpress.png'). '" width="40" alt="System User" style="border-radius: 50%;">';
+            }
             $avatar = '<img src="' . esc_url(get_avatar_url($user->ID, ["size" => 40])) . '" width="40" height="40" alt="User Avatar">';
 
             $display_name = $user ? esc_html($user->display_name) : esc_html($user_email); 

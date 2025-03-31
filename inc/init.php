@@ -42,7 +42,6 @@ class Init {
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
-        error_log("Creating table with query: " . $sql);
     }
 
     public static function create_email_logs_table() {
