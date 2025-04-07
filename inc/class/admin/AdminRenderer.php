@@ -30,7 +30,7 @@ class AdminRenderer
             }
     
             $is_active = $active_tab === $tab ? 'netpeak-nav-tab-active' : '';
-            $output .= '<a href="?page=netpeak-logs&tab=' . esc_attr($tab) . '" class="netpeak-nav-tab ' . esc_attr($is_active) . '">' . esc_html($label) . '</a>';
+            $output .= '<a href="?page=netpeak-logger&tab=' . esc_attr($tab) . '" class="netpeak-nav-tab ' . esc_attr($is_active) . '">' . esc_html($label) . '</a>';
         }
     
 
@@ -96,13 +96,13 @@ class AdminRenderer
         $tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : '';
         $page = isset($_GET['page']) ? sanitize_text_field($_GET['page']) : '';
 
-        $is_logs = ($tab === 'logs' || ($page === 'netpeak-logs' && $tab !== 'email_logs'));
+        $is_logs = ($tab === 'logs' || ($page === 'netpeak-logger' && $tab !== 'email_logs'));
         $is_email_logs = ($tab === 'email_logs');
 
         $actions = [];
 
         if ($is_logs) {
-            $actions[] = '<a href="' . esc_url(admin_url('admin.php?page=netpeak-logs&tab=edit_commit&id=' . $log->id)) . '"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/edit.png') . '" alt="Edit" width="16" height="16"></a>';
+            $actions[] = '<a href="' . esc_url(admin_url('admin.php?page=netpeak-logger&tab=edit_commit&id=' . $log->id)) . '"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/edit.png') . '" alt="Edit" width="16" height="16"></a>';
         }
 
         $actions[] = '<a href="' . esc_url(admin_url('admin-post.php?action=delete_commit&id=' . $log->id)) . '" class="delete-commit" onclick="return confirm(\'Are you sure you want to delete?\')"><img src="' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/delete.png') . '" alt="Delete" width="16" height="16"></a>';
@@ -161,10 +161,12 @@ class AdminRenderer
             $display_name = 'WordPress System (Cron)';
         } else {     
             $user = get_user_by('email', $user_email);
-            if (!$user) {
+            if (!$user || !$user->ID) {
                 $avatar ='<img src=" ' . esc_url(NETPEAK_LOGGER_URL . 'assets/img/wordpress.png'). '" width="40" alt="System User" style="border-radius: 50%;">';
             }
-            $avatar = '<img src="' . esc_url(get_avatar_url($user->ID, ["size" => 40])) . '" width="40" height="40" alt="User Avatar">';
+            if($user && $user->ID) {
+                $avatar = '<img src="' . esc_url(get_avatar_url($user->ID, ["size" => 40])) . '" width="40" height="40" alt="User Avatar">';
+            }
 
             $display_name = $user ? esc_html($user->display_name) : esc_html($user_email); 
         }
@@ -180,8 +182,6 @@ class AdminRenderer
     
         return $labels[$value] ?? 'Unknown';
     }
-
-
     /**
      * Render collapsible message
      */
@@ -198,55 +198,6 @@ class AdminRenderer
         return '<div class="message-container" title="Click to view full message" data-full-message="' . esc_attr($message) . '" onclick="showPopupMessage(this)">
                     <span class="short-message">' . esc_html($short_message) . '</span>
                 </div>';
-    }
-    /**
-     * Render pagination controls
-     *
-     * @param int $total_records Total number of logs found
-     * @param int $limit Number of logs per page
-     * @param int $current_page Current page number
-     */
-    public static function pagination($total_records, $limit, $current_page, $filters = [])
-    {
-        ?>
-        <div class="pagination-logs" style="margin-top: 20px;">
-            <form id="pagination-form" method="POST" action="<?php echo admin_url('admin.php?page=netpeak-logs' . '&' . http_build_query(array_filter($filters))); ?>" data-total-pages="<?php echo esc_attr(ceil($total_records / $limit)); ?>">
-                <input type="hidden" name="pagination_page" id="pagination-page" value="<?php echo esc_attr($current_page); ?>">
-                <?php foreach ($filters as $filter_name => $filter_value) : ?>
-                    <input type="hidden" name="<?php echo esc_attr($filter_name); ?>" value="<?php echo esc_attr($filter_value); ?>">
-                <?php endforeach; ?>
-
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div id="records-limit">
-                        <p><strong><?php echo esc_html($total_records); ?></strong> <?php esc_html_e('Logs found', 'netpeak-logger'); ?></p>
-                        <label for="records-per-page"><?php esc_html_e('Records per page:', 'netpeak-logger'); ?></label>
-                        <select id="records-per-page" name="pagination_limit">
-                            <option value="10" <?php selected($limit, 10); ?>>10</option>
-                            <option value="25" <?php selected($limit, 25); ?>>25</option>
-                            <?php if ($total_records >= 50) : ?>
-                                <option value="50" <?php selected($limit, 50); ?>>50</option>
-                            <?php endif; ?>
-                            <?php if ($total_records >= 100) : ?>
-                                <option value="100" <?php selected($limit, 100); ?>>100</option>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-
-                    <div id="pagination-buttons" style="text-align: right;">
-                        <button type="button" id="prev-page" class="button" <?php disabled($current_page <= 1); ?>>
-                            <?php esc_html_e('Previous', 'netpeak-logger'); ?>
-                        </button>
-                        <span id="current-page-info">
-                            <?php printf(esc_html__('Page %d of %d', 'netpeak-logger'), $current_page, ceil($total_records / $limit)); ?>
-                        </span>
-                        <button type="button" id="next-page" class="button" <?php disabled($current_page >= ceil($total_records / $limit)); ?>>
-                            <?php esc_html_e('Next', 'netpeak-logger'); ?>
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <?php
     }
 }
 

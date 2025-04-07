@@ -48,11 +48,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (clearButton) {
         clearButton.addEventListener("click", function () {
-            const newUrl = window.location.pathname + "?page=netpeak-logs&tab=logs";
+            const params = new URLSearchParams(window.location.search);
+            const tab = params.get('tab') || 'logs'; // default tab
+
+            const newUrl = window.location.pathname + `?page=netpeak-logger&tab=${tab}`;
             window.history.replaceState(null, "", newUrl);
             window.location.href = newUrl;
         });
     }
 });
+
 
 

@@ -42,23 +42,22 @@ class Admin {
      * @return void
      */
     public static function init() {
-        // Add main menu page
-        add_menu_page(
-            'Netpeak Logs',
-            'Netpeak Logs',
-            'netpeak_pm',
-            'netpeak-logs',
-            [AdminRenderer::class, 'render_logs_page'],
-            NETPEAK_LOGGER_URL . 'assets/img/netpeak-icon.svg'
-        );
-
         // Add admin bar menu item
+        add_submenu_page(
+            '__return_false',
+            __( 'Netpeak Logger', 'netpeak-seo' ),              
+            __( 'Netpeak Logger', 'netpeak-seo' ),              
+            'manage_options',                                
+            'netpeak-logger',                              
+            [AdminRenderer::class, 'render_logs_page'],                  
+            '__return_false'
+        );
         add_action('admin_bar_menu', function ($admin_bar) {
             if (current_user_can('netpeak_pm')) {
                 $admin_bar->add_menu([
                     'id'    => 'netpeak',
                     'title' => __('Logs', 'netpeak-logger'),
-                    'href'  => admin_url('admin.php?page=netpeak-logs'),
+                    'href'  => admin_url('admin.php?page=netpeak-logger&tab=logs'),
                     'meta'  => [
                         'title' => __('Netpeak Logs'),
                         'class' => 'netpeak-logs-admin-bar',

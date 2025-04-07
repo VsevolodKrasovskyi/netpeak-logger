@@ -1,4 +1,4 @@
-<form id="setting-form" method="post" action="">
+<form id="setting-form" method="post" action="" class="licensed-feature">
     <input type="hidden" name="action" value="settings_form_submit"/>
     <input type="hidden" name="settings" value="telegram"/>
     <table class="form-table">

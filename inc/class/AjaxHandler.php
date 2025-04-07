@@ -46,7 +46,7 @@ class AjaxHandler {
 
         $wpdb->insert($table_name, $data);
         EmailNotifier::send_commit_report($data);
-        wp_redirect(admin_url('admin.php?page=netpeak-logs&tab=logs'));
+        wp_redirect(admin_url('admin.php?page=netpeak-logger&tab=logs'));
         exit;
     }
     public static function handle_delete_commit() {
@@ -64,7 +64,7 @@ class AjaxHandler {
             ['%d']
         );
 
-        wp_redirect(admin_url('admin.php?page=netpeak-logs&deleted=true'));
+        wp_redirect(admin_url('admin.php?page=netpeak-logger&deleted=true'));
         exit;
     }
 
@@ -91,7 +91,7 @@ class AjaxHandler {
             ['%d']
         );
 
-        wp_redirect(admin_url('admin.php?page=netpeak-logs&updated=true'));
+        wp_redirect(admin_url('admin.php?page=netpeak-logger&updated=true'));
         exit;
     }
 

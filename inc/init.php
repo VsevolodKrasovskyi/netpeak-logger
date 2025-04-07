@@ -111,8 +111,6 @@ class Init {
                 'netpeak_pm'    => true
             ]);
         }
-        
-
     }
 
 
@@ -139,7 +137,7 @@ class Init {
             'action' => 'auto_login',
             'token'  => $token,
             'email'  => urlencode($email),
-        ], admin_url('admin.php?page=netpeak-logs&tab=logs'));
+        ], admin_url('admin.php?page=netpeak-logger&tab=logs'));
     }
     /**
      * Handles automatic user login via a tokenized login link.
@@ -179,10 +177,9 @@ class Init {
         delete_user_meta($user->ID, 'auto_login_token_expiry');
     
         wp_set_auth_cookie($user->ID, true);
-        wp_redirect(admin_url('admin.php?page=netpeak-logs&tab=logs'));
+        wp_redirect(admin_url('admin.php?page=netpeak-logger&tab=logs'));
         exit;
     }
-    
     
     public static function netpeak_register_setting() {
         //Logger settings

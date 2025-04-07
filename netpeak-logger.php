@@ -7,11 +7,13 @@
  * Author: Netpeak Dev Team
  * Author URI: https://netpeak.dev/
  * Text Domain: netpeak-logger
+ * Requires Plugins: netpeak-manager
  * Domain Path: /languages
  * Requires at least: 5.7
  * Requires PHP: 7.4
  * License: Subscription-based License
  * License URI: https://cdn.netpeak.dev/license-information
+ * 
  * ███╗   ██╗███████╗████████╗██████╗ ███████╗ █████╗ ██╗  ██╗
  * ████╗  ██║██╔════╝╚══██╔══╝██╔══██╗██╔════╝██╔══██╗██║ ██╔╝
  * ██╔██╗ ██║█████╗     ██║   ██████╔╝█████╗  ███████║█████╔╝ 
@@ -102,7 +104,6 @@ function load_updater() {
 
     ));
 };
-
 /**
  * Enqueue Admin Assets
  *
@@ -110,86 +111,24 @@ function load_updater() {
  */
 
 add_action('admin_enqueue_scripts', function() {
-
-    $screen = get_current_screen();
-
-    if($screen->id === 'toplevel_page_netpeak-logs') {
-
-        wp_enqueue_style(
-            'netpeak-logger-admin',
-            NETPEAK_LOGGER_URL . 'assets/css/admin.css',
-            [],
-            NETPEAK_LOGGER_VERSION
-        );
-
-        wp_enqueue_style( 
-            'settings-tab',
-            NETPEAK_LOGGER_URL . 'assets/css/settings-tabs.css',
-            [],
-            NETPEAK_LOGGER_VERSION
-        );
-
-        wp_enqueue_style(
-            'netpeak-logger-tabs',
-            NETPEAK_LOGGER_URL . 'assets/css/tabs.css',
-            [],
-            NETPEAK_LOGGER_VERSION
-        );
-        wp_enqueue_style(
-            'netpeak-logger-wysiwyg-editor',
-            NETPEAK_LOGGER_URL . 'assets/css/wysiwyg.css',
-            [],
-            NETPEAK_LOGGER_VERSION
-        );
-
-        // Scripts
-        wp_enqueue_script(
-            'netpeak-logger-admin',
-            NETPEAK_LOGGER_URL . 'assets/js/admin.js',
-            ['jquery'],
-            NETPEAK_LOGGER_VERSION,
-            true
-        );
-        wp_enqueue_script(
-            'netpeak-logger-collapsible',
-            NETPEAK_LOGGER_URL . 'assets/js/collapsible_message.js',
-            [],
-            NETPEAK_LOGGER_VERSION,
-            true
-        );
-        wp_enqueue_script(
-            'netpeak-logger-settings-tabs',
-            NETPEAK_LOGGER_URL . 'assets/js/setting-tab.js',
-            [],
-            NETPEAK_LOGGER_VERSION,
-            true
-        );
-        wp_enqueue_script(
-            'netpeak-logger-bulk-actions',
-            NETPEAK_LOGGER_URL . 'assets/js/bulk-editor.js',
-            [],
-            NETPEAK_LOGGER_VERSION,
-            true
-        );
-        wp_enqueue_script(
-            'netpeak-logger-pagination-logs',
-            NETPEAK_LOGGER_URL . 'assets/js/pagination.js',
-            [],
-            NETPEAK_LOGGER_VERSION,
-            true
-        );
-        wp_enqueue_script(
-            'netpeak-logger-tooltip',
-            NETPEAK_LOGGER_URL . 'assets/js/tooltip.js',
-            [],
-            NETPEAK_LOGGER_VERSION,
-            true
-        );
-        wp_localize_script('netpeak-logger-bulk-actions', 'WP', [
-            'ajaxurl' => admin_url('admin-ajax.php'),
-            'logsActionAlert' => __('No logs selected.', 'netpeak-logger'),
-            'logsActionConfirm' => __('Are you sure you want to proceed?', 'netpeak-logger'),
-            'logsActionSuccess' => __('Successfully!', 'netpeak-logger'),
-        ]);
-    }
+    wp_enqueue_style('datatables', 'https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css');
+    wp_enqueue_style('netpeak-logger-admin',NETPEAK_LOGGER_URL . 'assets/css/admin.css',[],NETPEAK_LOGGER_VERSION);
+    wp_enqueue_style('settings-tab',NETPEAK_LOGGER_URL . 'assets/css/settings-tabs.css',[],NETPEAK_LOGGER_VERSION);
+    wp_enqueue_style('netpeak-logger-tabs',NETPEAK_LOGGER_URL . 'assets/css/tabs.css',[],NETPEAK_LOGGER_VERSION);
+    wp_enqueue_style('netpeak-logger-wysiwyg-editor',NETPEAK_LOGGER_URL . 'assets/css/wysiwyg.css',[],NETPEAK_LOGGER_VERSION);
+    // Scripts
+    wp_enqueue_script('netpeak-logger-admin',NETPEAK_LOGGER_URL . 'assets/js/admin.js',['jquery'],NETPEAK_LOGGER_VERSION,true);
+    wp_enqueue_script('netpeak-logger-collapsible',NETPEAK_LOGGER_URL . 'assets/js/collapsible_message.js',[],NETPEAK_LOGGER_VERSION,true);
+    wp_enqueue_script('netpeak-logger-settings-tabs',NETPEAK_LOGGER_URL . 'assets/js/setting-tab.js',[],NETPEAK_LOGGER_VERSION,true);
+    wp_enqueue_script('netpeak-logger-bulk-actions',NETPEAK_LOGGER_URL . 'assets/js/bulk-editor.js',[],NETPEAK_LOGGER_VERSION,true);
+    wp_enqueue_script('netpeak-logger-tooltip',NETPEAK_LOGGER_URL . 'assets/js/tooltip.js',[],NETPEAK_LOGGER_VERSION,true);
+    wp_localize_script('netpeak-logger-bulk-actions', 'WP', [
+        'ajaxurl' => admin_url('admin-ajax.php'),
+        'logsActionAlert' => __('No logs selected.', 'netpeak-logger'),
+        'logsActionConfirm' => __('Are you sure you want to proceed?', 'netpeak-logger'),
+        'logsActionSuccess' => __('Successfully!', 'netpeak-logger'),
+    ]);
+    wp_enqueue_script('datatables', 'https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js', ['jquery'], null, true);
+    
+    
 });

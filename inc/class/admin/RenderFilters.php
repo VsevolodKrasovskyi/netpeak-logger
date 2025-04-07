@@ -43,14 +43,25 @@ class RenderFilters {
     public static function get_filters($filters = []) {
         $where_clauses = [];
         $params = [];
+
+        // Map filter keys to database column names
+        $field_map = [
+            'actions_logs' => 'action',
+            'user_login'   => 'user_login',
+            'log_type'     => 'log_type',
+            'is_archive'   => 'is_archive',
+            'status'       => 'status',
+        ];
         
         if (!isset($filters['is_archive']) || $filters['is_archive'] === '') {
             $filters['is_archive'] = '0';
         }
     
-        foreach ($filters as $column => $value) {
-            if ($column === 'is_archive') {
-                $where_clauses[] = "is_archive = %d";
+        foreach ($filters as $key => $value) {
+            $column = $field_map[$key] ?? $key;
+    
+            if ($key === 'is_archive') {
+                $where_clauses[] = "{$column} = %d";
                 $params[] = intval($value);
             } elseif (!empty($value)) {
                 $where_clauses[] = "{$column} = %s";
@@ -74,7 +85,7 @@ class RenderFilters {
      *
      * @return array Array of records
      */
-    public static function query_db($table_name, $filters = [], $order_by = 'id', $order_dir = 'DESC', $limit = 10, $offset = 0) {
+    public static function query_db($table_name, $filters = [], $order_by = 'id', $order_dir = 'DESC') {
         global $wpdb;
     
         if (!$wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_name))) {
@@ -83,13 +94,12 @@ class RenderFilters {
     
         list($where_sql, $params) = self::get_filters($filters);
     
-        $query = "SELECT * FROM {$table_name} WHERE {$where_sql} ORDER BY {$order_by} {$order_dir} LIMIT %d OFFSET %d";
-        $params[] = $limit;
-        $params[] = $offset;
-    
+        $query = "SELECT * FROM {$table_name} WHERE {$where_sql} ORDER BY {$order_by} {$order_dir}";
         $query = $wpdb->prepare($query, $params);
+    
         return $wpdb->get_results($query);
     }
+    
 
     /**
      * Get the total number of records from a specified table with applied filters.

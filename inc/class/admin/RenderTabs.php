@@ -9,14 +9,10 @@ class RenderTabs extends AdminRenderer{
     public static function logs_tab() {
         global $wpdb;
         $table = $wpdb->prefix . 'netpeak_logs';
-        //Variables
-        $current_page = isset($_POST['pagination_page']) ? intval($_POST['pagination_page']) : 1;
-        $limit = isset($_POST['pagination_limit']) ? intval($_POST['pagination_limit']) : 10;
-        $offset = ($current_page - 1) * $limit;
     
         $filters = [
             'user_login' => $_GET['user'] ?? null,
-            'action'     => $_GET['actions'] ?? null,
+            'actions_logs'     => $_GET['actions_logs'] ?? null,
             'log_type'   => $_GET['log_type'] ?? null,
             'is_archive'   => $_GET['is_archive'] ?? null,
         ];
@@ -25,7 +21,7 @@ class RenderTabs extends AdminRenderer{
                 'label'  => 'All Users',
                 'query'  => "SELECT DISTINCT user_login FROM {$table}",
             ],
-            'action' => [
+            'actions_logs' => [
                 'label'    => 'All Actions',
                 'query'    => "SELECT DISTINCT action FROM {$table}",
                 'callback' => [Admin::class, 'format_action'],
@@ -42,19 +38,17 @@ class RenderTabs extends AdminRenderer{
             ],
         ];
         $hidden_fields = [
-            'page' => 'netpeak-logs',
+            'page' => 'netpeak-logger',
             'tab'  => 'logs',
         ];
     
-        $logs = RenderFilters::query_db($table, $filters, 'created_at', 'DESC', $limit, $offset);
-        $total_records = RenderFilters::get_total_records($table, $filters);
+        $logs = RenderFilters::query_db($table, $filters, 'created_at', 'DESC');
         RenderFilters::render_filters($table, $param, $hidden_fields);
-
         ?>
         <div class="wrap">
             <h1>Logs</h1>
             <?php if (!empty($logs)) : ?>
-            <table class="netpeak-logs-table">
+            <table id="netpeak-logs-table" class="netpeak-logs-table">
                 <thead>
                     <tr>
                         <th><input type="checkbox" id="select-all-logs"></th>
@@ -80,11 +74,20 @@ class RenderTabs extends AdminRenderer{
                         <?php endforeach; ?>
                 </tbody>
             </table>
-            <?php AdminRenderer::pagination($total_records, $limit, $current_page, $filters);?>
-            <?php else : ?>
-                <h3 style="display:flex; justify-content:center"><?php esc_html_e('No logs found.', 'netpeak-logger'); ?></h3>
             <?php endif; ?>
         </div>
+        <script>
+            jQuery(document).ready(function($) {
+                $('#netpeak-logs-table').DataTable({
+                    pageLength: 10,
+                    lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                    order: [[5, 'desc']], //sort by date
+                    columnDefs: [
+                        { orderable: false, targets: [0, 6] } //disable sorting for the first and last column
+                    ]
+                });
+            });
+            </script>
         <?php
     }
     
@@ -152,7 +155,6 @@ class RenderTabs extends AdminRenderer{
         <?php
     }
     
-
     public static function edit_commit_page() {
         if (!isset($_GET['id']) || empty($_GET['id'])) {
             wp_die(__('Invalid edit ID', 'netpeak-logger'));
@@ -200,11 +202,6 @@ class RenderTabs extends AdminRenderer{
     public static function email_logs_tab() {
         global $wpdb;
         $table = $wpdb->prefix . 'netpeak_email_logs';
-        //Variables
-        $current_page = isset($_POST['pagination_page']) ? intval($_POST['pagination_page']) : 1;
-        $limit = isset($_POST['pagination_limit']) ? intval($_POST['pagination_limit']) : 10;
-        $offset = ($current_page - 1) * $limit;
-    
         $filters = [
             'status' => $_GET['status'] ?? '',
             'is_archive' => $_GET['is_archive'] ?? '',
@@ -223,20 +220,17 @@ class RenderTabs extends AdminRenderer{
             
         ];
         $hidden_fields = [
-            'page' => 'netpeak-logs',
+            'page' => 'netpeak-logger',
             'tab' => 'email_logs',
         ];
 
         $logs = RenderFilters::query_db($table, $filters, 'created_at');
-        $total_records = RenderFilters::get_total_records($table, $filters);
         RenderFilters::render_filters($table, $param, $hidden_fields);
-        
-    
         ?>
         <div class="wrap">
             <h1>Email Logs</h1>
             <?php if (!empty($logs)) : ?>
-            <table class="netpeak-logs-table">
+            <table id="netpeak-logs-table" class="netpeak-logs-table">
                 <thead>
                     <tr>
                         <th><input type="checkbox" id="select-all-logs"></th>
@@ -272,9 +266,6 @@ class RenderTabs extends AdminRenderer{
                         <?php endforeach; ?>
                 </tbody>
             </table>
-            <?php AdminRenderer::pagination($total_records, $limit, $current_page);?>
-            <?php else : ?>
-                <h3 style="display:flex; justify-content:center"><?php esc_html_e('No logs found.', 'netpeak-logger'); ?></h3>
             <?php endif; ?>
         </div>
         <style>
@@ -290,6 +281,18 @@ class RenderTabs extends AdminRenderer{
                 background-color: #f1f1f1;
             }
         </style>
+        <script>
+            jQuery(document).ready(function($) {
+                $('#netpeak-logs-table').DataTable({
+                    pageLength: 10,
+                    lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+                    order: [[5, 'desc']], //sort by date
+                    columnDefs: [
+                        { orderable: false, targets: [0, 6] } //disable sorting for the first and last column
+                    ]
+                });
+            });
+            </script>
         <?php
     }
     
@@ -300,13 +303,13 @@ class RenderTabs extends AdminRenderer{
         </div>
         <div class="settings-structure-wrapper">
             <div class="settings-sidebar">
-                <a href="?page=netpeak-logs&tab=settings" data-settings="loggers" class="settings-tab <?php echo (isset($_GET['settings']) && $_GET['settings'] == 'loggers') ? 'settings-tab-active' : ''; ?>">
+                <a href="?page=netpeak-logger&tab=settings" data-settings="loggers" class="settings-tab <?php echo (isset($_GET['settings']) && $_GET['settings'] == 'loggers') ? 'settings-tab-active' : ''; ?>">
                     <?php _e('Loggers', 'netpeak-logger'); ?>
                 </a>
-                <a href="?page=netpeak-logs&tab=settings&settings=telegram" data-settings="telegram" class="settings-tab <?php echo (isset($_GET['settings']) && $_GET['settings'] == 'telegram') ? 'settings-tab-active' : ''; ?>">
+                <a href="?page=netpeak-logger&tab=settings&settings=telegram" data-settings="telegram" class="settings-tab <?php echo (isset($_GET['settings']) && $_GET['settings'] == 'telegram') ? 'settings-tab-active' : ''; ?>">
                     <?php _e('Telegram API', 'netpeak-logger'); ?>
                 </a>
-                <a href="?page=netpeak-logs&tab=settings&settings=reports" data-settings="reports" class="settings-tab <?php echo (isset($_GET['settings']) && $_GET['settings'] == 'reports') ? 'settings-tab-active' : ''; ?>">
+                <a href="?page=netpeak-logger&tab=settings&settings=reports" data-settings="reports" class="settings-tab <?php echo (isset($_GET['settings']) && $_GET['settings'] == 'reports') ? 'settings-tab-active' : ''; ?>">
                     <?php _e('Email Reports', 'netpeak-logger'); ?>
                 </a>
             </div>
