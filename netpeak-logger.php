@@ -3,7 +3,7 @@
  * Plugin Name: Netpeak Logger
  * Plugin URI: https://cdn.netpeak.dev/
  * Description: Tracks changes in WordPress and logs activity. Provides comprehensive logging functionality for developers and administrators.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Netpeak Dev Team
  * Author URI: https://netpeak.dev/
  * Text Domain: netpeak-logger
@@ -30,7 +30,7 @@ defined('ABSPATH') || exit;
  */
 define('NETPEAK_LOGGER_PATH', plugin_dir_path(__FILE__));
 define('NETPEAK_LOGGER_URL', plugin_dir_url(__FILE__));
-define('NETPEAK_LOGGER_VERSION', '1.0.2');
+define('NETPEAK_LOGGER_VERSION', '1.0.3');
 
 if ( ! defined( 'NETPEAK_LOGGER_COMPONENTS_ADMIN' ) ) {
     define( 'NETPEAK_LOGGER_COMPONENTS_ADMIN', NETPEAK_LOGGER_PATH . 'inc/components/' );

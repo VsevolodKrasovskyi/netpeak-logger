@@ -4,7 +4,7 @@
     "keywords": ["wordpress", "logger", "netpeak", "activity log"],
     "license": "proprietary",
     "homepage": "https://cdn.netpeak.dev/",
-    "type": "project",
+    "type": "wp-plugin",
     "autoload": {
         "psr-4": {
             "NetpeakLogger\\Loggers\\": "inc/class/loggers/",

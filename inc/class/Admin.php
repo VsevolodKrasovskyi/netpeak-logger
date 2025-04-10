@@ -50,7 +50,7 @@ class Admin {
             'manage_options',                                
             'netpeak-logger',                              
             [AdminRenderer::class, 'render_logs_page'],                  
-            '__return_false'
+            null
         );
         add_action('admin_bar_menu', function ($admin_bar) {
             if (current_user_can('netpeak_pm')) {

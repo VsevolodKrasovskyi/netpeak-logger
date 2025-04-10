@@ -51,13 +51,13 @@ class RenderTabs extends AdminRenderer{
             <table id="netpeak-logs-table" class="netpeak-logs-table">
                 <thead>
                     <tr>
-                        <th><input type="checkbox" id="select-all-logs"></th>
+                        <th class="no-sort"><input type="checkbox" id="select-all-logs"></th>
                         <th>User</th>
-                        <th>Action</th>
-                        <th>Log Type</th>
-                        <th>Message</th>
+                        <th class="no-sort">Action</th>
+                        <th class="no-sort">Log Type</th>
+                        <th class="no-sort">Message</th>
                         <th>Date</th>
-                        <th>Actions</th>
+                        <th class="no-sort">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -83,7 +83,10 @@ class RenderTabs extends AdminRenderer{
                     lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
                     order: [[5, 'desc']], //sort by date
                     columnDefs: [
-                        { orderable: false, targets: [0, 6] } //disable sorting for the first and last column
+                        {
+                            targets: 'no-sort',
+                            orderable: false
+                        }
                     ]
                 });
             });
@@ -233,13 +236,13 @@ class RenderTabs extends AdminRenderer{
             <table id="netpeak-logs-table" class="netpeak-logs-table">
                 <thead>
                     <tr>
-                        <th><input type="checkbox" id="select-all-logs"></th>
+                        <th class="no-sort"><input type="checkbox" id="select-all-logs"></th>
                         <th>Sender</th>
-                        <th>Recipient</th>
+                        <th class="no-sort">Recipient</th>
                         <th>Status</th>
-                        <th>Body</th>
+                        <th class="no-sort">Body</th>
                         <th>Date</th>
-                        <th>Actions</th>
+                        <th class="no-sort">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -288,7 +291,10 @@ class RenderTabs extends AdminRenderer{
                     lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
                     order: [[5, 'desc']], //sort by date
                     columnDefs: [
-                        { orderable: false, targets: [0, 6] } //disable sorting for the first and last column
+                        {
+                            targets: 'no-sort',
+                            orderable: false
+                        }
                     ]
                 });
             });

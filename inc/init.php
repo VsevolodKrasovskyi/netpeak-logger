@@ -59,7 +59,7 @@ class Init {
             is_archive TINYINT(1) DEFAULT 0,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
-            KEY netpeak_idx_status (status),
+            KEY netpeak_idx_status (status)
         ) $charset_collate;";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');

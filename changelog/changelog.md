@@ -1,3 +1,8 @@
+# 1.0.3
+- Adjustment to the new system 
+
+---
+
 # 1.0.2
 - Fixed bug with Updater_GIT class - conflicts with Netpeak Tools plugins
 
